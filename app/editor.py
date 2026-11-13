@@ -442,8 +442,8 @@ class AuditTab(QWidget):
         self.status.setObjectName("hint")
         bar.addWidget(self.status)
         bar.addStretch(1)
-        hint = QLabel("Digite um prefixo (ex.: <b>dp1</b>, <b>cr</b>) e aperte <b>Tab</b> · "
-                      "<b>Tab</b>/<b>Shift+Tab</b> navegam pelos campos · <b>Esc</b> sai")
+        hint = QLabel("Digite um prefixo (por exemplo, <b>dp1</b> ou <b>cr</b>) e pressione <b>Tab</b> · "
+                      "<b>Tab</b> e <b>Shift+Tab</b> navegam entre os campos · <b>Esc</b> encerra o preenchimento")
         hint.setObjectName("hint")
         bar.addWidget(hint)
         root.addLayout(bar)
@@ -468,15 +468,15 @@ class AuditTab(QWidget):
 
     def copy_all(self) -> None:
         QGuiApplication.clipboard().setText(self.editor.toPlainText())
-        self._flash("✔ Texto copiado")
+        self._flash("✔ Texto copiado para a área de transferência")
 
     def reset_format(self) -> None:
         if not self.editor.is_template():
             ans = QMessageBox.question(
                 self,
                 "Resetar formato",
-                "Isso apaga o texto atual e volta ao modelo padrão.\n"
-                "(Se mudar de ideia, use Ctrl+Z no editor.)\n\nContinuar?",
+                "O texto atual será apagado e o modelo padrão será restaurado.\n"
+                "Para desfazer a operação, pressione Ctrl+Z no editor.\n\nDeseja continuar?",
             )
             if ans != QMessageBox.StandardButton.Yes:
                 return

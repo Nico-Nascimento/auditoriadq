@@ -1,6 +1,8 @@
 """Arquivo de snippets de cada pessoa (fica na pasta AppData do usuário)."""
 from __future__ import annotations
 
+import hashlib
+import json
 import shutil
 import time
 from pathlib import Path
@@ -9,6 +11,18 @@ from PySide6.QtCore import QObject, QStandardPaths, QTimer, Signal
 
 from .snippets import Snippet, find_matches, load_snippets_file, save_snippets_file
 from .resources import resource_path
+
+
+# Impressões digitais dos padrões anteriores. Se o arquivo da pessoa ainda for exatamente um
+# desses padrões (nunca editado), ele é atualizado automaticamente para o padrão novo.
+OLD_DEFAULT_FINGERPRINTS = {
+    "820f9365c4560057de24118f2e48be08496b6418c3b4cff502c87c971e60d664",  # v1.0.0 / v1.1.0
+}
+
+
+def fingerprint(snippets: list[Snippet]) -> str:
+    data = json.dumps([[s.name, s.prefixes, s.body] for s in snippets], ensure_ascii=False)
+    return hashlib.sha256(data.encode("utf-8")).hexdigest()
 
 
 def user_data_dir() -> Path:
@@ -28,6 +42,7 @@ class SnippetStore(QObject):
         self.path = path or (user_data_dir() / "snippets.json")
         self.snippets: list[Snippet] = []
         self.load_warning: str | None = None
+        self.updated_defaults = False
 
         self._save_timer = QTimer(self)
         self._save_timer.setSingleShot(True)
@@ -46,12 +61,16 @@ class SnippetStore(QObject):
                 save_snippets_file(self.path, [])
         try:
             self.snippets = load_snippets_file(self.path)
+            if fingerprint(self.snippets) in OLD_DEFAULT_FINGERPRINTS and default.exists():
+                self.snippets = load_snippets_file(default)
+                save_snippets_file(self.path, self.snippets)
+                self.updated_defaults = True
         except Exception as exc:  # arquivo corrompido: guarda uma cópia e recomeça do padrão
             backup = self.path.with_name(f"snippets.corrompido-{time.strftime('%Y%m%d-%H%M%S')}.json")
             shutil.copyfile(self.path, backup)
             self.load_warning = (
                 f"Não foi possível ler o arquivo de snippets ({exc}).\n\n"
-                f"Uma cópia foi guardada em:\n{backup}\n\nOs snippets padrão foram carregados."
+                f"Uma cópia de segurança foi salva em:\n{backup}\n\nOs snippets padrão foram carregados."
             )
             self.snippets = load_snippets_file(default) if default.exists() else []
             save_snippets_file(self.path, self.snippets)

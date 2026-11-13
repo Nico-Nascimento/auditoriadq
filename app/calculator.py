@@ -449,9 +449,9 @@ class CalcView(QGraphicsView):
         painter.drawText(
             vr,
             int(Qt.AlignmentFlag.AlignCenter),
-            "💡 Tire um print e cole aqui com CTRL + V\n"
-            "ou clique em “Selecionar imagens” (pode escolher várias).\n\n"
-            "Também dá para arrastar arquivos de imagem para cá.",
+            "Cole uma captura de tela com CTRL + V\n"
+            "ou clique em “Selecionar imagens” (é possível escolher várias).\n\n"
+            "Também é possível arrastar arquivos de imagem para esta área.",
         )
         painter.restore()
 
@@ -487,16 +487,25 @@ class CalculatorTab(QWidget):
         root.addLayout(bar)
 
         hint = QLabel(
-            "<b>Botão esquerdo</b>: marcar · <b>Botão direito</b> (segurar): arrastar a imagem — no fundo vazio, "
-            "arrasta tudo · <b>Roda do mouse</b>: zoom · As opções acima valem para a imagem selecionada "
-            "(borda tracejada)."
+            "<b>Botão esquerdo</b>: marcação · <b>Botão direito</b> (pressionado): move a imagem; sobre o fundo, "
+            "move toda a área · <b>Roda do mouse</b>: zoom · As opções acima se aplicam à imagem selecionada "
+            "(indicada pela borda tracejada)."
         )
         hint.setObjectName("hint")
         hint.setWordWrap(True)
         root.addWidget(hint)
 
+        # A área cinza fica dentro de um quadro arredondado; a margem interna evita que os
+        # cantos retos da área de desenho apareçam por fora da borda arredondada.
+        frame = QFrame()
+        frame.setObjectName("canvasFrame")
+        fl = QVBoxLayout(frame)
+        fl.setContentsMargins(6, 6, 6, 6)
         self.view = CalcView()
-        root.addWidget(self.view, 1)
+        self.view.setObjectName("canvas")
+        self.view.setFrameShape(QFrame.Shape.NoFrame)
+        fl.addWidget(self.view)
+        root.addWidget(frame, 1)
 
         self.view.selectionChanged.connect(self._sync_controls)
         self.view.zoomChanged.connect(self._update_zoom)
@@ -582,7 +591,7 @@ class CalculatorTab(QWidget):
             else:
                 self.view.add_pixmap(pix, Path(p).name)
         if failed:
-            QMessageBox.warning(self, "Imagens", "Não foi possível abrir:\n" + "\n".join(failed))
+            QMessageBox.warning(self, "Imagens", "Não foi possível abrir os seguintes arquivos:\n" + "\n".join(failed))
 
     def load_from_mime(self, md) -> None:
         if md.hasUrls():

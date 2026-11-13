@@ -10,25 +10,27 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
         "Visão geral",
         [
             (
-                "Para que serve o programa?",
-                "Ele junta as ferramentas do dia a dia da auditoria em uma janela só:"
+                "Qual é a finalidade do programa?",
+                "O AuditoriaDQ reúne, em uma única janela, as ferramentas utilizadas no trabalho de auditoria:"
                 "<ul>"
-                "<li><b>Auditoria</b>: onde você escreve o texto da auditoria, com o modelo padrão já preenchido "
-                "e frases prontas (snippets) que aparecem ao digitar um prefixo.</li>"
-                "<li><b>Calculadora 40%</b>: onde você cola prints, desenha a marcação e vê as faixas de 40%.</li>"
-                "<li><b>Anotações</b>: um bloco de notas livre, salvo automaticamente.</li>"
-                "<li><b>Snippets</b>: onde você cadastra e ajusta os prefixos e as frases.</li>"
+                "<li><b>Auditoria</b>: redação do texto da auditoria, com o modelo padrão já preenchido e frases "
+                "prontas (snippets) acionadas por prefixos.</li>"
+                "<li><b>Calculadora 40%</b>: inserção de capturas de tela, marcação da área do produto e "
+                "visualização das faixas de 40%.</li>"
+                "<li><b>Anotações</b>: bloco de notas livre, salvo automaticamente.</li>"
+                "<li><b>Snippets</b>: cadastro e manutenção dos prefixos e das frases.</li>"
                 "</ul>"
-                "Use o menu à esquerda para trocar de área.",
+                "A navegação entre as áreas é feita pelo menu lateral, à esquerda.",
             ),
             (
-                "Como troco entre modo claro e modo escuro?",
-                "Clique no botão <b>Modo escuro</b> (ou <b>Modo claro</b>) no fim do menu à esquerda. "
-                "O programa lembra a sua escolha da próxima vez que abrir.",
+                "Como alternar entre o modo claro e o modo escuro?",
+                "Utilize o botão <b>Modo escuro</b> (ou <b>Modo claro</b>), localizado no final do menu lateral. "
+                "A preferência é registrada e mantida nas próximas utilizações do programa.",
             ),
             (
-                "Preciso de internet?",
-                "Não. Tudo funciona no seu computador, inclusive os seus snippets.",
+                "É necessário estar conectado à internet?",
+                "Não. O programa funciona integralmente no computador, inclusive o armazenamento dos snippets e "
+                "das anotações.",
             ),
         ],
     ),
@@ -37,58 +39,60 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
         [
             (
                 "Como funciona o modelo padrão?",
-                "O editor sempre abre com as seções <b>Roi</b>, <b>Espaços</b>, <b>Preços</b> e <b>Produtos</b>, "
-                "separadas por <code>--------------</code>. Os títulos são texto comum: dá para editar, "
-                "apagar ou criar seções direto no editor.",
+                "O editor é aberto com as seções <b>Roi</b>, <b>Espaços</b>, <b>Preços</b> e <b>Produtos</b>, "
+                "separadas por <code>--------------</code>. Os títulos são texto comum e podem ser editados, "
+                "removidos ou complementados diretamente no editor.",
             ),
             (
-                "Onde escrevo cada ajuste?",
-                "O primeiro ajuste fica na mesma linha do título, depois dos dois pontos. "
-                "Os seguintes vão um por linha, logo abaixo, antes do separador:"
+                "Onde cada ajuste deve ser registrado?",
+                "O primeiro ajuste deve ser registrado na mesma linha do título, após os dois pontos. "
+                "Os ajustes seguintes devem ser registrados um por linha, logo abaixo, antes do separador:"
                 "<pre>Produtos: Desmarcar o produto de número 12, ele não aparece até 40%.\n"
                 "Ajustar a identificação do produto de número 15, identificar como \"Arroz\".\n"
                 "--------------</pre>",
             ),
             (
-                "Como uso os snippets (frases prontas)?",
-                "Digite o prefixo, por exemplo <b>dp1</b>. Aparece uma lista com as opções que começam com o que "
-                "você digitou, mostrando o prefixo e o nome da frase."
+                "Como utilizar os snippets (frases prontas)?",
+                "Digite o prefixo desejado, por exemplo <b>dp1</b>. Será exibida uma lista com as opções "
+                "correspondentes, contendo o prefixo e o nome de cada frase."
                 "<ul>"
-                "<li><b>↑ / ↓</b> escolhem a opção.</li>"
-                "<li><b>Tab</b> ou <b>Enter</b> inserem a frase.</li>"
-                "<li><b>Esc</b> fecha a lista.</li>"
-                "<li><b>Ctrl + Espaço</b> abre a lista manualmente.</li>"
+                "<li><b>↑ / ↓</b>: selecionam a opção.</li>"
+                "<li><b>Tab</b> ou <b>Enter</b>: inserem a frase selecionada.</li>"
+                "<li><b>Esc</b>: fecha a lista.</li>"
+                "<li><b>Ctrl + Espaço</b>: exibe a lista manualmente.</li>"
                 "</ul>",
             ),
             (
-                "Como preencho as partes da frase (id, nome, direita…)?",
-                "Depois de inserir a frase, o cursor vai para o primeiro campo, com o texto sugerido selecionado. "
-                "Digite por cima para trocar ou deixe como está."
+                "Como preencher os campos da frase (id, identificação, direita etc.)?",
+                "Após a inserção da frase, o cursor é posicionado no primeiro campo, com o texto sugerido "
+                "selecionado. Basta digitar o novo conteúdo ou manter o texto sugerido."
                 "<ul>"
-                "<li><b>Tab</b> vai para o próximo campo.</li>"
-                "<li><b>Shift + Tab</b> volta para o campo anterior.</li>"
-                "<li>Depois do último campo, o <b>Tab</b> leva o cursor para o fim da frase.</li>"
-                "<li><b>Esc</b> encerra o preenchimento a qualquer momento.</li>"
+                "<li><b>Tab</b>: avança para o próximo campo.</li>"
+                "<li><b>Shift + Tab</b>: retorna ao campo anterior.</li>"
+                "<li>Após o último campo, <b>Tab</b> posiciona o cursor ao final da frase.</li>"
+                "<li><b>Esc</b>: encerra o preenchimento a qualquer momento.</li>"
                 "</ul>"
-                "Os campos ficam destacados em amarelo (o atual) e azul (os outros) enquanto você preenche.",
+                "Durante o preenchimento, o campo atual é destacado em amarelo e os demais, em azul.",
             ),
             (
-                "Como marco uma seção como correta?",
-                "Depois dos dois pontos, digite <b>cr</b> e aperte <b>Tab</b>. Isso insere <b>Correto.</b>",
+                "Como registrar que uma seção está correta?",
+                "Após os dois pontos, digite <b>cr</b> e pressione <b>Tab</b>. O texto <b>Correto.</b> será "
+                "inserido.",
             ),
             (
-                "Dois snippets aparecem com o mesmo prefixo. Está certo?",
-                "Sim. Prefixos repetidos são permitidos (por exemplo, <b>mp1</b> para “Marcar produto 40%” e "
-                "“Marcar produto escopo”). Os dois aparecem na lista e você escolhe pelo nome.",
+                "Por que dois snippets aparecem com o mesmo prefixo?",
+                "Prefixos repetidos são permitidos, como <b>mp1</b> para “Marcar produto 40%” e "
+                "“Marcar produto escopo”. Ambos são exibidos na lista, e a escolha é feita pelo nome.",
             ),
             (
-                "Como copio o texto para o sistema da empresa?",
-                "Clique em <b>Copiar tudo</b> e cole onde precisar com <b>Ctrl + V</b>.",
+                "Como transferir o texto para o sistema da empresa?",
+                "Utilize o botão <b>Copiar tudo</b> e, em seguida, cole o conteúdo no destino com "
+                "<b>Ctrl + V</b>.",
             ),
             (
-                "Para que serve o botão “Resetar formato”?",
-                "Ele apaga o texto e volta ao modelo padrão. Se houver texto escrito, o programa pede confirmação. "
-                "Se resetar sem querer, aperte <b>Ctrl + Z</b> no editor para desfazer.",
+                "Qual é a função do botão “Resetar formato”?",
+                "O botão apaga o texto atual e restaura o modelo padrão. Caso haja texto escrito, será solicitada "
+                "confirmação. Para desfazer a operação, pressione <b>Ctrl + Z</b> no editor.",
             ),
         ],
     ),
@@ -96,42 +100,46 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
         "Calculadora 40%",
         [
             (
-                "Como coloco imagens?",
-                "Tire um print e aperte <b>Ctrl + V</b> com a Calculadora aberta, ou clique em <b>Selecionar imagens</b> "
-                "(dá para escolher várias de uma vez). Também dá para arrastar arquivos de imagem do Explorer "
-                "para a área cinza. Cada imagem nova entra ao lado da anterior.",
+                "Como inserir imagens?",
+                "Com a Calculadora 40% aberta, cole uma captura de tela com <b>Ctrl + V</b> ou utilize o botão "
+                "<b>Selecionar imagens</b>, que permite escolher vários arquivos de uma vez. Também é possível "
+                "arrastar arquivos de imagem do Explorador de Arquivos para a área cinza. Cada nova imagem é "
+                "posicionada ao lado da anterior.",
             ),
             (
-                "Como faço a marcação?",
-                "Com o <b>botão esquerdo</b>, clique e arraste sobre a imagem para desenhar o retângulo. "
-                "Depois, também com o botão esquerdo:"
+                "Como fazer a marcação?",
+                "Com o <b>botão esquerdo</b> do mouse, clique e arraste sobre a imagem para desenhar o retângulo. "
+                "Em seguida, também com o botão esquerdo:"
                 "<ul>"
-                "<li>arraste o retângulo para movê-lo;</li>"
-                "<li>arraste as alças (quadradinhos) para mudar o tamanho.</li>"
+                "<li>arraste o retângulo para reposicioná-lo;</li>"
+                "<li>arraste as alças (pequenos quadrados) para alterar o tamanho.</li>"
                 "</ul>"
-                "Cada imagem tem a sua própria marcação. Para desenhar de novo, use <b>Resetar Seleção</b>.",
+                "Cada imagem possui a sua própria marcação. Para desenhar uma nova marcação, utilize "
+                "<b>Resetar Seleção</b>.",
             ),
             (
-                "Como leio as faixas de 40%?",
-                "A <b>faixa azul</b> marca 40% da altura do retângulo e a <b>faixa amarela</b> marca 40% da largura. "
-                "As linhas mostram onde termina cada 40%. Use <b>Horizontal</b> (Esquerda/Direita) e "
-                "<b>Vertical</b> (Superior/Inferior) para escolher de que lado as faixas começam.",
+                "Como interpretar as faixas de 40%?",
+                "A <b>faixa azul</b> representa 40% da altura do retângulo e a <b>faixa amarela</b>, 40% da "
+                "largura. As linhas indicam o limite de cada faixa. As opções <b>Horizontal</b> "
+                "(Esquerda/Direita) e <b>Vertical</b> (Superior/Inferior) definem o lado a partir do qual as "
+                "faixas são calculadas.",
             ),
             (
-                "Como movo as imagens e a tela?",
-                "Segure o <b>botão direito</b> e arraste:"
+                "Como mover as imagens e a área de visualização?",
+                "Mantenha o <b>botão direito</b> do mouse pressionado e arraste:"
                 "<ul>"
-                "<li><b>em cima de uma imagem</b>: move aquela imagem (para deixar lado a lado e comparar);</li>"
-                "<li><b>no fundo vazio</b>: move a vista inteira.</li>"
+                "<li><b>sobre uma imagem</b>: a imagem é movida, o que permite posicioná-las lado a lado para "
+                "comparação;</li>"
+                "<li><b>sobre o fundo</b>: toda a área de visualização é movida.</li>"
                 "</ul>"
-                "A <b>roda do mouse</b> faz zoom no ponto onde está o cursor (de 20% a 1000%).",
+                "A <b>roda do mouse</b> aplica zoom no ponto em que o cursor está posicionado (de 20% a 1000%).",
             ),
             (
                 "O que é a imagem selecionada?",
-                "É a última imagem em que você clicou. Ela fica com <b>borda tracejada</b>, por cima das outras e "
-                "com as alças visíveis. Os botões <b>Remover imagem</b>, <b>Resetar Seleção</b>, "
-                "<b>Horizontal</b> e <b>Vertical</b> agem só nela. A tecla <b>Delete</b> também remove a "
-                "imagem selecionada.",
+                "É a última imagem em que houve clique. Ela é indicada pela <b>borda tracejada</b>, permanece "
+                "à frente das demais e exibe as alças da marcação. Os botões <b>Remover imagem</b>, "
+                "<b>Resetar Seleção</b>, <b>Horizontal</b> e <b>Vertical</b> atuam somente sobre ela. A tecla "
+                "<b>Delete</b> também remove a imagem selecionada.",
             ),
         ],
     ),
@@ -139,11 +147,10 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
         "Anotações",
         [
             (
-                "Para que serve a área de Anotações?",
-                "É um bloco de notas livre, para anotar o que quiser. Não tem snippets nem modelo: é só digitar. "
-                "O texto é salvo automaticamente no seu computador "
-                "(<code>AppData\\Roaming\\AuditoriaDQ\\anotacoes.txt</code>) e continua lá quando você "
-                "fechar e abrir o programa. O botão <b>Copiar tudo</b> copia as anotações.",
+                "Qual é a finalidade da área de Anotações?",
+                "É um bloco de notas livre, sem snippets e sem modelo. O conteúdo é salvo automaticamente neste "
+                "computador (<code>AppData\\Roaming\\AuditoriaDQ\\anotacoes.txt</code>) e permanece "
+                "disponível ao reabrir o programa. O botão <b>Copiar tudo</b> copia as anotações.",
             ),
         ],
     ),
@@ -151,36 +158,37 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
         "Snippets",
         [
             (
-                "Como crio ou edito uma frase?",
-                "Na área <b>Snippets</b>, escolha um item da lista ou clique em <b>Novo snippet</b>. Preencha:"
+                "Como criar ou editar uma frase?",
+                "Na área <b>Snippets</b>, selecione um item da lista ou utilize o botão <b>Novo snippet</b>. "
+                "Em seguida, preencha:"
                 "<ul>"
-                "<li><b>Nome</b>: aparece na lista de sugestões e ajuda a escolher.</li>"
-                "<li><b>Prefixo</b>: o que você digita para chamar a frase. Para ter mais de um, separe com "
-                "vírgula.</li>"
-                "<li><b>Frase</b>: o texto que será inserido.</li>"
+                "<li><b>Nome</b>: exibido na lista de sugestões, auxilia na escolha da frase.</li>"
+                "<li><b>Prefixo</b>: texto digitado para acionar a frase. Para utilizar mais de um prefixo, "
+                "separe-os por vírgula.</li>"
+                "<li><b>Frase</b>: texto que será inserido.</li>"
                 "</ul>"
                 "As alterações são salvas automaticamente.",
             ),
             (
-                "Como crio os campos para preencher?",
-                "Use <code>${1:texto}</code>, <code>${2:texto}</code> e assim por diante. O número define a ordem "
-                "do Tab e o texto é o valor sugerido. Exemplo:"
+                "Como criar campos de preenchimento?",
+                "Utilize <code>${1:texto}</code>, <code>${2:texto}</code> e assim por diante. O número define a "
+                "ordem de navegação com Tab, e o texto corresponde ao valor sugerido. Exemplo:"
                 "<pre>Desmarcar o produto de número ${1:id}, ${2:ele não aparece até 40%}.</pre>"
-                "Use <code>$0</code> para dizer onde o cursor deve parar no final. A <b>Prévia</b> mostra a frase "
+                "Utilize <code>$0</code> para indicar a posição final do cursor. A <b>Prévia</b> exibe a frase "
                 "com os campos destacados.",
             ),
             (
-                "Posso usar meu arquivo de snippets do VS Code?",
-                "Sim. O formato é o mesmo. Use <b>Importar arquivo…</b> para trazer um arquivo do VS Code "
-                "(escolha entre adicionar aos seus ou substituir todos) e <b>Exportar arquivo…</b> para gerar um "
-                "arquivo que o VS Code também entende.",
+                "É possível utilizar o arquivo de snippets do VS Code?",
+                "Sim, o formato é o mesmo. O botão <b>Importar arquivo…</b> permite trazer um arquivo do VS Code, "
+                "adicionando-o aos snippets existentes ou substituindo-os. O botão <b>Exportar arquivo…</b> gera "
+                "um arquivo compatível com o VS Code.",
             ),
             (
-                "Onde ficam salvos os meus snippets?",
-                "Cada pessoa tem o próprio arquivo, salvo na pasta do usuário no Windows "
-                "(<code>AppData\\Roaming\\AuditoriaDQ\\snippets.json</code>). O caminho completo aparece "
-                "no rodapé da área Snippets, junto com o botão <b>Abrir pasta do arquivo</b>. "
-                "Para passar seus snippets a um colega, exporte o arquivo e peça para ele importar.",
+                "Onde os snippets ficam armazenados?",
+                "Cada usuário possui o próprio arquivo, armazenado na pasta do usuário no Windows "
+                "(<code>AppData\\Roaming\\AuditoriaDQ\\snippets.json</code>). O caminho completo é exibido "
+                "no rodapé da área Snippets, junto ao botão <b>Abrir pasta do arquivo</b>. Para compartilhar os "
+                "snippets com outra pessoa, exporte o arquivo e solicite que ela o importe.",
             ),
         ],
     ),
@@ -190,15 +198,15 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
             (
                 "Lista de atalhos",
                 "<table cellspacing='0' cellpadding='4'>"
-                "<tr><td><b>Tab</b> / <b>Enter</b></td><td>Inserir o snippet escolhido na lista</td></tr>"
-                "<tr><td><b>Tab</b> / <b>Shift + Tab</b></td><td>Próximo / anterior campo do snippet</td></tr>"
-                "<tr><td><b>Esc</b></td><td>Fechar a lista ou sair dos campos</td></tr>"
-                "<tr><td><b>Ctrl + Espaço</b></td><td>Abrir a lista de sugestões</td></tr>"
+                "<tr><td><b>Tab</b> / <b>Enter</b></td><td>Inserir o snippet selecionado na lista</td></tr>"
+                "<tr><td><b>Tab</b> / <b>Shift + Tab</b></td><td>Avançar / retornar entre os campos do snippet</td></tr>"
+                "<tr><td><b>Esc</b></td><td>Fechar a lista ou encerrar o preenchimento</td></tr>"
+                "<tr><td><b>Ctrl + Espaço</b></td><td>Exibir a lista de sugestões</td></tr>"
                 "<tr><td><b>Ctrl + Z</b></td><td>Desfazer no editor</td></tr>"
-                "<tr><td><b>Ctrl + V</b></td><td>Colar print (na Calculadora 40%)</td></tr>"
-                "<tr><td><b>Delete</b></td><td>Remover a imagem selecionada (na Calculadora 40%)</td></tr>"
+                "<tr><td><b>Ctrl + V</b></td><td>Colar captura de tela (Calculadora 40%)</td></tr>"
+                "<tr><td><b>Delete</b></td><td>Remover a imagem selecionada (Calculadora 40%)</td></tr>"
                 "<tr><td><b>Botão esquerdo</b></td><td>Marcar, mover e redimensionar</td></tr>"
-                "<tr><td><b>Botão direito</b></td><td>Arrastar imagem ou a vista</td></tr>"
+                "<tr><td><b>Botão direito</b></td><td>Mover a imagem ou a área de visualização</td></tr>"
                 "<tr><td><b>Roda do mouse</b></td><td>Zoom</td></tr>"
                 "</table>",
             ),
@@ -249,7 +257,7 @@ class HelpTab(QWidget):
         root.setSpacing(10)
 
         self.search = QLineEdit()
-        self.search.setPlaceholderText("Procurar na ajuda… (ex.: zoom, Tab, importar)")
+        self.search.setPlaceholderText("Pesquisar na ajuda… (por exemplo: zoom, Tab, importar)")
         self.search.setClearButtonEnabled(True)
         self.search.textChanged.connect(self._filter)
         root.addWidget(self.search)

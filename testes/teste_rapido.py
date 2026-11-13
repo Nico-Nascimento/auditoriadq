@@ -3,6 +3,7 @@
 Uso:  python testes/teste_rapido.py
 """
 import os
+import shutil
 import sys
 import tempfile
 from pathlib import Path
@@ -86,7 +87,7 @@ def main() -> None:
     check("ele também entra no escopo" in ed.toPlainText(), "seta para baixo + Enter escolhe a 2ª opção")
     QTest.keyClicks(ed, "Arroz")
     QTest.keyClick(ed, Qt.Key.Key_Tab)
-    check(ed.textCursor().selectedText() == "nome", "dentro de um campo, Tab vai para o próximo campo")
+    check(ed.textCursor().selectedText() == "identificação", "dentro de um campo, Tab vai para o próximo campo")
     QTest.keyClick(ed, Qt.Key.Key_Escape)
     check(ed.session is None, "Esc encerra o preenchimento")
 
@@ -146,8 +147,16 @@ def main() -> None:
     check(notes_file.read_text(encoding="utf-8") == "Lembrar de revisar a loja 15", "anotações são salvas no arquivo")
 
     print("Snippets e Ajuda")
+    old_dir = Path(tempfile.mkdtemp())
+    shutil.copyfile(Path(__file__).with_name("snippets_padrao_v1.json"), old_dir / "snippets.json")
+    upgraded = SnippetStore(path=old_dir / "snippets.json")
+    check(upgraded.updated_defaults and len(upgraded.snippets) == 25, "arquivo com o padrão antigo é atualizado")
+    edited_dir = Path(tempfile.mkdtemp())
+    (edited_dir / "snippets.json").write_text('{"Meu": {"prefix": "x", "body": ["y"]}}', encoding="utf-8")
+    kept = SnippetStore(path=edited_dir / "snippets.json")
+    check(not kept.updated_defaults and len(kept.snippets) == 1, "arquivo editado pela pessoa é mantido")
     win.tabs.setCurrentWidget(win.snippets)
-    check(win.snippets.list.count() == len(store.snippets) == 24, "aba Snippets lista os 24 snippets")
+    check(win.snippets.list.count() == len(store.snippets) == 25, "aba Snippets lista os 25 snippets")
     win.tabs.setCurrentWidget(win.help)
     check(len(win.help.items) > 10, "aba Ajuda tem as perguntas")
 

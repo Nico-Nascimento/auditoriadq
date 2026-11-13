@@ -5,6 +5,7 @@ import time
 import traceback
 
 from PySide6.QtCore import QCoreApplication, QSettings
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QApplication,
     QButtonGroup,
@@ -24,6 +25,7 @@ from .calculator import CalculatorTab
 from .editor import AuditTab
 from .help_tab import HelpTab
 from .notes_tab import NotesTab
+from .resources import resource_path
 from .snippets_tab import SnippetsTab
 from .store import SnippetStore, user_data_dir
 
@@ -55,9 +57,16 @@ class MainWindow(QMainWindow):
         sv = QVBoxLayout(sidebar)
         sv.setContentsMargins(14, 20, 14, 16)
         sv.setSpacing(6)
+        brand = QHBoxLayout()
+        brand.setSpacing(8)
+        logo = QLabel()
+        logo.setPixmap(QIcon(str(resource_path("app", "assets", "icone.png"))).pixmap(34, 34))
+        brand.addWidget(logo)
         title = QLabel(APP_TITLE)
         title.setObjectName("title")
-        sv.addWidget(title)
+        brand.addWidget(title, 1)
+        sv.addLayout(brand)
+        sv.addSpacing(8)
 
         # ---------------- páginas ----------------
         self.tabs = QStackedWidget()  # mantém o nome "tabs" (usado pelo teste)
@@ -154,7 +163,7 @@ def _install_error_handler() -> None:
             QMessageBox.critical(
                 None,
                 "Erro inesperado",
-                "Aconteceu um erro inesperado. O programa vai tentar continuar.\n\n"
+                "Ocorreu um erro inesperado. O programa tentará continuar em funcionamento.\n\n"
                 f"{exc_type.__name__}: {exc}\n\n"
                 + (f"Detalhes salvos em:\n{log}" if log else ""),
             )
@@ -175,7 +184,16 @@ def run() -> int:
     QCoreApplication.setApplicationName(APP_NAME)
     QCoreApplication.setApplicationVersion(VERSION)
     _install_error_handler()
+    if sys.platform.startswith("win"):
+        # Faz o Windows mostrar o ícone do programa na barra de tarefas (e não o do Python)
+        try:
+            import ctypes
+
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("AuditoriaDQ.App")
+        except Exception:
+            pass
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon(str(resource_path("app", "assets", "icone.ico"))))
     apply_style(app)
 
     store = SnippetStore()

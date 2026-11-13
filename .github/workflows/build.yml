@@ -52,7 +52,9 @@ jobs:
         run: >
           python -m PyInstaller --noconfirm --clean --onefile --windowed
           --name AuditoriaDQ
+          --icon "app\assets\icone.ico"
           --add-data "app\snippets_padrao.json;app"
+          --add-data "app\assets;app\assets"
           main.py
 
       - name: Testar se o .exe abre

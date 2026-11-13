@@ -97,7 +97,7 @@ QScrollArea, QScrollArea > QWidget > QWidget#faqContent {{ background: {t['windo
 
 /* ---------- menu lateral ---------- */
 QFrame#sidebar {{ background: {t['sidebar']}; border-right: 1px solid {t['border']}; }}
-QLabel#title {{ font-size: 18pt; font-weight: 700; color: {t['title']}; padding: 4px 6px 12px 6px; }}
+QLabel#title {{ font-size: 16pt; font-weight: 700; color: {t['title']}; padding: 0; }}
 QPushButton#navButton {{
     text-align: left;
     background: transparent;
@@ -222,7 +222,8 @@ QLabel#faqAnswer {{
     font-size: 10.5pt;
 }}
 
-QGraphicsView {{ border: 1px solid {t['border']}; border-radius: 12px; }}
+QFrame#canvasFrame {{ background: {t['canvas']}; border: 1px solid {t['border']}; border-radius: 12px; }}
+QGraphicsView#canvas {{ border: none; background: {t['canvas']}; }}
 QSplitter::handle {{ background: transparent; }}
 QToolTip {{ color: {t['text']}; background: {t['surface']}; border: 1px solid {t['border']}; }}
 

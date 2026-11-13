@@ -26,7 +26,7 @@ class NotesTab(QWidget):
         self.status.setObjectName("hint")
         bar.addWidget(self.status)
         bar.addStretch(1)
-        info = QLabel("Anote o que quiser: tudo é salvo automaticamente no seu computador.")
+        info = QLabel("Espaço livre para anotações. O conteúdo é salvo automaticamente neste computador.")
         info.setObjectName("hint")
         bar.addWidget(info)
         root.addLayout(bar)
@@ -41,7 +41,7 @@ class NotesTab(QWidget):
         font = QFont("Segoe UI", 12)
         self.editor.setFont(font)
         self.editor.setTabStopDistance(QFontMetrics(font).horizontalAdvance(" ") * 4)
-        self.editor.setPlaceholderText("Escreva suas anotações aqui…")
+        self.editor.setPlaceholderText("Digite suas anotações aqui…")
         cv.addWidget(self.editor)
         root.addWidget(card, 1)
 
@@ -85,4 +85,4 @@ class NotesTab(QWidget):
 
     def copy_all(self) -> None:
         QGuiApplication.clipboard().setText(self.editor.toPlainText())
-        self._flash("✔ Texto copiado")
+        self._flash("✔ Texto copiado para a área de transferência")

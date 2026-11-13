@@ -79,7 +79,7 @@ class SnippetsTab(QWidget):
         lv = QVBoxLayout(left)
         lv.setContentsMargins(0, 0, 8, 0)
         self.search = QLineEdit()
-        self.search.setPlaceholderText("Buscar por nome, prefixo ou frase…")
+        self.search.setPlaceholderText("Pesquisar por nome, prefixo ou frase…")
         self.search.setClearButtonEnabled(True)
         self.search.textChanged.connect(self.refresh_list)
         lv.addWidget(self.search)
@@ -109,11 +109,11 @@ class SnippetsTab(QWidget):
         form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
         form.setVerticalSpacing(10)
         self.ed_name = QLineEdit()
-        self.ed_name.setPlaceholderText("Ex.: Desmarcar produto 40%")
+        self.ed_name.setPlaceholderText("Exemplo: Desmarcar produto 40%")
         self.ed_prefix = QLineEdit()
-        self.ed_prefix.setPlaceholderText("Ex.: dp1   (para mais de um prefixo, separe com vírgula)")
+        self.ed_prefix.setPlaceholderText("Exemplo: dp1   (para mais de um prefixo, separe-os por vírgula)")
         self.ed_body = QPlainTextEdit()
-        self.ed_body.setPlaceholderText("Ex.: Desmarcar o produto de número ${1:id}, ${2:ele não aparece até 40%}.")
+        self.ed_body.setPlaceholderText("Exemplo: Desmarcar o produto de número ${1:id}, ${2:ele não aparece até 40%}.")
         self.ed_body.setMinimumHeight(110)
         form.addRow("Nome:", self.ed_name)
         form.addRow("Prefixo:", self.ed_prefix)
@@ -121,9 +121,9 @@ class SnippetsTab(QWidget):
         rv.addLayout(form)
 
         syntax = QLabel(
-            "Campos para preencher: <b>${1:texto}</b>, <b>${2:texto}</b>… "
-            "O número define a ordem do Tab e o texto é o valor sugerido. "
-            "Use <b>$0</b> para dizer onde o cursor termina."
+            "Campos de preenchimento: <b>${1:texto}</b>, <b>${2:texto}</b>… "
+            "O número define a ordem de navegação com Tab, e o texto corresponde ao valor sugerido. "
+            "Utilize <b>$0</b> para indicar a posição final do cursor."
         )
         syntax.setObjectName("hint")
         syntax.setWordWrap(True)
@@ -185,7 +185,7 @@ class SnippetsTab(QWidget):
         return f"{prefix}   —   {s.name}"
 
     def _update_path_label(self) -> None:
-        self.path_label.setText(f"Seu arquivo: {self.store.path}")
+        self.path_label.setText(f"Arquivo de snippets: {self.store.path}")
 
     def refresh_list(self) -> None:
         query = self.search.text().strip().casefold()
@@ -263,18 +263,18 @@ class SnippetsTab(QWidget):
 
         msgs: list[str] = []
         if not s.prefixes:
-            msgs.append("⚠ Sem prefixo: este snippet não aparece nas sugestões do editor.")
+            msgs.append("⚠ Este snippet não possui prefixo e, portanto, não aparece nas sugestões do editor.")
         for prefix, others in same_prefix_conflicts(self.store.snippets, s).items():
             names = ", ".join(f"“{o.name}”" for o in others)
             msgs.append(
-                f"ℹ O prefixo <b>{html.escape(prefix)}</b> também é usado por {html.escape(names)}. "
-                "Os dois aparecem na lista de sugestões e você escolhe pelo nome."
+                f"ℹ O prefixo <b>{html.escape(prefix)}</b> também é utilizado por {html.escape(names)}. "
+                "Ambos são exibidos na lista de sugestões e a escolha é feita pelo nome."
             )
         name = s.name.strip()
         if not name:
-            msgs.append("⚠ Dê um nome ao snippet: ele aparece na lista de sugestões.")
+            msgs.append("⚠ Informe um nome para o snippet, pois ele é exibido na lista de sugestões.")
         elif any(o is not s and o.name.strip() == name for o in self.store.snippets):
-            msgs.append("⚠ Já existe outro snippet com este nome. Ao salvar, este recebe um número no fim do nome.")
+            msgs.append("⚠ Já existe outro snippet com este nome. Ao salvar, um número será acrescentado ao final do nome.")
         if msgs:
             self.warning.setText("<br>".join(msgs))
             self.warning.show()
@@ -302,7 +302,7 @@ class SnippetsTab(QWidget):
         ans = QMessageBox.question(
             self,
             "Excluir snippet",
-            f"Excluir o snippet “{s.name}” ({s.prefix_text or 'sem prefixo'})?",
+            f"Deseja excluir o snippet “{s.name}” ({s.prefix_text or 'sem prefixo'})?",
         )
         if ans != QMessageBox.StandardButton.Yes:
             return
@@ -330,14 +330,14 @@ class SnippetsTab(QWidget):
             QMessageBox.warning(self, "Importar snippets", f"Não foi possível ler o arquivo:\n{exc}")
             return
         if not imported:
-            QMessageBox.information(self, "Importar snippets", "Nenhum snippet encontrado no arquivo.")
+            QMessageBox.information(self, "Importar snippets", "Nenhum snippet foi encontrado no arquivo.")
             return
 
         box = QMessageBox(self)
         box.setWindowTitle("Importar snippets")
-        box.setText(f"{len(imported)} snippets encontrados. O que deseja fazer?")
-        btn_add = box.addButton("Adicionar aos meus", QMessageBox.ButtonRole.AcceptRole)
-        btn_replace = box.addButton("Substituir todos os meus", QMessageBox.ButtonRole.DestructiveRole)
+        box.setText(f"Foram encontrados {len(imported)} snippets. Como deseja importá-los?")
+        btn_add = box.addButton("Adicionar aos existentes", QMessageBox.ButtonRole.AcceptRole)
+        btn_replace = box.addButton("Substituir todos", QMessageBox.ButtonRole.DestructiveRole)
         box.addButton("Cancelar", QMessageBox.ButtonRole.RejectRole)
         box.exec()
         clicked = box.clickedButton()
@@ -350,7 +350,7 @@ class SnippetsTab(QWidget):
             self.store.replace_all(self.store.snippets + new)
             QMessageBox.information(
                 self, "Importar snippets",
-                f"{len(new)} snippets adicionados ({len(imported) - len(new)} já existiam).",
+                f"{len(new)} snippets foram adicionados ({len(imported) - len(new)} já existiam).",
             )
         else:
             return
@@ -371,7 +371,7 @@ class SnippetsTab(QWidget):
             with open(path, "w", encoding="utf-8") as fh:
                 fh.write(snippets_to_text(self.store.snippets))
         except OSError as exc:
-            QMessageBox.warning(self, "Exportar snippets", f"Não foi possível salvar:\n{exc}")
+            QMessageBox.warning(self, "Exportar snippets", f"Não foi possível salvar o arquivo:\n{exc}")
             return
         QMessageBox.information(self, "Exportar snippets", f"Arquivo salvo em:\n{path}")
 
