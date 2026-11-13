@@ -31,6 +31,11 @@ def check(cond: bool, msg: str) -> None:
     print("  ✔", msg)
 
 
+def shot(win, name: str) -> None:
+    QTest.qWait(80)
+    win.grab().save(str(Path(os.environ.get("SCREENSHOT_DIR", tempfile.gettempdir())) / f"tela-{name}.png"))
+
+
 def main() -> None:
     app = QApplication(sys.argv)
     apply_style(app)
@@ -74,6 +79,7 @@ def main() -> None:
     QTest.keyClick(ed, Qt.Key.Key_Return)
     QTest.keyClicks(ed, "mp1")
     check(ed.popup.count() == 2, "prefixo repetido 'mp1' mostra as 2 opções")
+    shot(win, "sugestoes")
     QTest.keyClick(ed, Qt.Key.Key_Down)
     QTest.keyClick(ed, Qt.Key.Key_Return)
     check("ele também entra no escopo" in ed.toPlainText(), "seta para baixo + Enter escolhe a 2ª opção")
@@ -108,6 +114,15 @@ def main() -> None:
     m = a.mark
     check(m is not None and abs(m.w - 200) < 2 and abs(m.h - 150) < 2, "botão esquerdo desenha o retângulo")
     check(view.selected is a and b.mark is None, "marcação pertence só à imagem clicada")
+    QTest.mousePress(view.viewport(), Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier, vp(b, 100, 60))
+    QTest.mouseMove(view.viewport(), vp(b, 200, 150))
+    QTest.mouseMove(view.viewport(), vp(b, 300, 260))
+    QTest.mouseRelease(view.viewport(), Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier, vp(b, 300, 260))
+    win.calc.h_group.buttons()[1].click()
+    win.calc.v_group.buttons()[1].click()
+    check(b.h_side == "right" and b.v_side == "bottom" and a.h_side == "left", "lados das faixas valem por imagem")
+    shot(win, "marcacao")
+    view.select(a)
 
     win.calc.btn_reset.click()
     check(a.mark is None, "Resetar Seleção apaga a marcação da imagem selecionada")
