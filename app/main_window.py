@@ -32,7 +32,7 @@ from .store import SnippetStore, user_data_dir
 
 APP_NAME = "AuditoriaDQ"
 APP_TITLE = "AuditoriaDQ"
-VERSION = "1.4.0"
+VERSION = "1.5.0"
 
 
 class MainWindow(QMainWindow):
