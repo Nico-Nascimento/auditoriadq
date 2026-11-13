@@ -4,7 +4,6 @@ from __future__ import annotations
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QFrame, QLabel, QLineEdit, QPushButton, QScrollArea, QVBoxLayout, QWidget
 
-from .theme import AZUL, AZUL_ESCURO, CINZA_BOTAO, DOURADO
 
 FAQ: list[tuple[str, list[tuple[str, str]]]] = [
     (
@@ -17,8 +16,15 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
                 "<li><b>Auditoria</b>: onde você escreve o texto da auditoria, com o modelo padrão já preenchido "
                 "e frases prontas (snippets) que aparecem ao digitar um prefixo.</li>"
                 "<li><b>Calculadora 40%</b>: onde você cola prints, desenha a marcação e vê as faixas de 40%.</li>"
+                "<li><b>Anotações</b>: um bloco de notas livre, salvo automaticamente.</li>"
                 "<li><b>Snippets</b>: onde você cadastra e ajusta os prefixos e as frases.</li>"
-                "</ul>",
+                "</ul>"
+                "Use o menu à esquerda para trocar de área.",
+            ),
+            (
+                "Como troco entre modo claro e modo escuro?",
+                "Clique no botão <b>Modo escuro</b> (ou <b>Modo claro</b>) no fim do menu à esquerda. "
+                "O programa lembra a sua escolha da próxima vez que abrir.",
             ),
             (
                 "Preciso de internet?",
@@ -91,7 +97,7 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
         [
             (
                 "Como coloco imagens?",
-                "Tire um print e aperte <b>Ctrl + V</b> com a aba aberta, ou clique em <b>Selecionar imagens</b> "
+                "Tire um print e aperte <b>Ctrl + V</b> com a Calculadora aberta, ou clique em <b>Selecionar imagens</b> "
                 "(dá para escolher várias de uma vez). Também dá para arrastar arquivos de imagem do Explorer "
                 "para a área cinza. Cada imagem nova entra ao lado da anterior.",
             ),
@@ -130,11 +136,23 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
         ],
     ),
     (
+        "Anotações",
+        [
+            (
+                "Para que serve a área de Anotações?",
+                "É um bloco de notas livre, para anotar o que quiser. Não tem snippets nem modelo: é só digitar. "
+                "O texto é salvo automaticamente no seu computador "
+                "(<code>AppData\\Roaming\\AuditoriaDQ\\anotacoes.txt</code>) e continua lá quando você "
+                "fechar e abrir o programa. O botão <b>Copiar tudo</b> copia as anotações.",
+            ),
+        ],
+    ),
+    (
         "Snippets",
         [
             (
                 "Como crio ou edito uma frase?",
-                "Na aba <b>Snippets</b>, escolha um item da lista ou clique em <b>Novo snippet</b>. Preencha:"
+                "Na área <b>Snippets</b>, escolha um item da lista ou clique em <b>Novo snippet</b>. Preencha:"
                 "<ul>"
                 "<li><b>Nome</b>: aparece na lista de sugestões e ajuda a escolher.</li>"
                 "<li><b>Prefixo</b>: o que você digita para chamar a frase. Para ter mais de um, separe com "
@@ -161,7 +179,7 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
                 "Onde ficam salvos os meus snippets?",
                 "Cada pessoa tem o próprio arquivo, salvo na pasta do usuário no Windows "
                 "(<code>AppData\\Roaming\\AuditoriaDQ\\snippets.json</code>). O caminho completo aparece "
-                "no rodapé da aba Snippets, junto com o botão <b>Abrir pasta do arquivo</b>. "
+                "no rodapé da área Snippets, junto com o botão <b>Abrir pasta do arquivo</b>. "
                 "Para passar seus snippets a um colega, exporte o arquivo e peça para ele importar.",
             ),
         ],
@@ -201,13 +219,7 @@ class FaqItem(QWidget):
         self.button = QPushButton()
         self.button.setCheckable(True)
         self.button.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.button.setStyleSheet(
-            f"QPushButton {{ text-align: left; background: {CINZA_BOTAO}; color: {AZUL_ESCURO}; border: none;"
-            f" border-radius: 8px; padding: 10px 14px; font-weight: 600; font-size: 10.5pt; }}"
-            f"QPushButton:hover {{ background: #e8edf3; }}"
-            f"QPushButton:checked {{ background: {AZUL}; color: white; border-bottom-left-radius: 0;"
-            f" border-bottom-right-radius: 0; }}"
-        )
+        self.button.setObjectName("faqQuestion")
         self.button.toggled.connect(self._toggle)
         lay.addWidget(self.button)
 
@@ -215,10 +227,7 @@ class FaqItem(QWidget):
         self.answer.setWordWrap(True)
         self.answer.setTextFormat(Qt.TextFormat.RichText)
         self.answer.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-        self.answer.setStyleSheet(
-            f"background: white; border: 1px solid {DOURADO}; border-top: none; border-bottom-left-radius: 8px;"
-            f" border-bottom-right-radius: 8px; padding: 10px 16px; font-size: 10.5pt;"
-        )
+        self.answer.setObjectName("faqAnswer")
         self.answer.hide()
         lay.addWidget(self.answer)
         self._toggle(False)
@@ -249,7 +258,7 @@ class HelpTab(QWidget):
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QFrame.Shape.NoFrame)
         content = QWidget()
-        content.setObjectName("root")
+        content.setObjectName("faqContent")
         self.content_layout = QVBoxLayout(content)
         self.content_layout.setContentsMargins(4, 4, 12, 4)
         self.content_layout.setSpacing(6)
@@ -258,7 +267,7 @@ class HelpTab(QWidget):
         self.headers: list[tuple[QLabel, list[FaqItem]]] = []
         for section, entries in FAQ:
             header = QLabel(section)
-            header.setStyleSheet(f"font-size: 14pt; font-weight: 700; color: {AZUL_ESCURO}; padding-top: 10px;")
+            header.setObjectName("faqSection")
             self.content_layout.addWidget(header)
             section_items = []
             for q, a in entries:

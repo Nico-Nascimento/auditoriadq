@@ -16,6 +16,7 @@ from PySide6.QtGui import QColor, QPixmap  # noqa: E402
 from PySide6.QtTest import QTest  # noqa: E402
 from PySide6.QtWidgets import QApplication  # noqa: E402
 
+from app import theme  # noqa: E402
 from app.editor import TEMPLATE  # noqa: E402
 from app.main_window import MainWindow, apply_style  # noqa: E402
 from app.store import SnippetStore  # noqa: E402
@@ -136,16 +137,34 @@ def main() -> None:
     win.calc.btn_remove.click()
     check(len(view.images) == 1, "Remover imagem tira só a selecionada")
 
+    print("Anotações")
+    win.tabs.setCurrentWidget(win.notes)
+    check(win.nav.checkedId() == win.tabs.indexOf(win.notes), "menu lateral acompanha a área aberta")
+    QTest.keyClicks(win.notes.editor, "Lembrar de revisar a loja 15")
+    win.notes.save_now()
+    notes_file = tmp.parent / "anotacoes.txt"
+    check(notes_file.read_text(encoding="utf-8") == "Lembrar de revisar a loja 15", "anotações são salvas no arquivo")
+
     print("Snippets e Ajuda")
     win.tabs.setCurrentWidget(win.snippets)
     check(win.snippets.list.count() == len(store.snippets) == 24, "aba Snippets lista os 24 snippets")
     win.tabs.setCurrentWidget(win.help)
     check(len(win.help.items) > 10, "aba Ajuda tem as perguntas")
 
-    for i, name in enumerate(["auditoria", "calculadora", "snippets", "ajuda"]):
-        win.tabs.setCurrentIndex(i)
-        QTest.qWait(50)
-        win.grab().save(str(Path(os.environ.get("SCREENSHOT_DIR", tempfile.gettempdir())) / f"tela-{name}.png"))
+    names = ["auditoria", "calculadora", "anotacoes", "snippets", "ajuda"]
+    for i, name in enumerate(names):
+        win.nav.button(i).click()
+        shot(win, name)
+
+    print("Modo escuro")
+    win.theme_button.click()
+    check(theme.current_name() == "escuro", "botão troca para o modo escuro")
+    for i, name in enumerate(names):
+        win.nav.button(i).click()
+        shot(win, f"escuro-{name}")
+    check(win.settings.value("tema") == "escuro", "escolha do tema fica salva")
+    win.theme_button.click()
+    check(theme.current_name() == "claro", "botão volta para o modo claro")
 
     print(f"\nTudo certo: {ok} verificações passaram.")
     win.close()

@@ -454,7 +454,7 @@ class AuditTab(QWidget):
         cv.setContentsMargins(6, 6, 6, 6)
         self.editor = AuditEditor(store)
         self.editor.setFrameShape(QFrame.Shape.NoFrame)
-        self.editor.setStyleSheet("QPlainTextEdit { border: none; padding: 10px; }")
+        self.editor.setObjectName("bareEditor")
         cv.addWidget(self.editor)
         root.addWidget(card, 1)
 

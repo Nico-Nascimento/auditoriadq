@@ -33,15 +33,16 @@ from .snippets import (
     snippets_to_text,
 )
 from .store import SnippetStore
-from .theme import AZUL
+from . import theme
 
 
 def preview_html(body: str) -> str:
     """Frase expandida, com os campos de preenchimento destacados."""
+    t = theme.current()
     parsed = parse_body(body)
     text = parsed.text
     if not text:
-        return "<i style='color:#8a9bb0'>(frase vazia)</i>"
+        return f"<i style='color:{t['text_muted']}'>(frase vazia)</i>"
     spans = sorted(parsed.tabstops, key=lambda f: f.start)
     parts: list[str] = []
     pos = 0
@@ -51,8 +52,8 @@ def preview_html(body: str) -> str:
         parts.append(html.escape(text[pos:f.start]))
         inner = html.escape(text[f.start:f.end]) or "&nbsp;&nbsp;&nbsp;"
         parts.append(
-            f"<span style='background-color:#FFEBA8;'>{inner}</span>"
-            f"<sup style='color:{AZUL}'>{f.index}</sup>"
+            f"<span style='background-color:{t['field_highlight']}; color:{t['field_highlight_text']};'>{inner}</span>"
+            f"<sup style='color:{t['text_soft']}'>{f.index}</sup>"
         )
         pos = f.end
     parts.append(html.escape(text[pos:]))
@@ -134,7 +135,7 @@ class SnippetsTab(QWidget):
         self.preview = QLabel()
         self.preview.setWordWrap(True)
         self.preview.setTextFormat(Qt.TextFormat.RichText)
-        self.preview.setStyleSheet("font-size: 11pt; padding: 8px; background: #FBFBFB; border-radius: 8px;")
+        self.preview.setObjectName("preview")
         self.preview.setMinimumHeight(48)
         rv.addWidget(self.preview)
 
@@ -249,10 +250,13 @@ class SnippetsTab(QWidget):
             return
         self.refresh_list()
 
+    def apply_theme(self) -> None:
+        self._update_preview()
+
     def _update_preview(self) -> None:
         s = self.current
         if s is None:
-            self.preview.setText("<i style='color:#8a9bb0'>Selecione um snippet na lista.</i>")
+            self.preview.setText(f"<i style='color:{theme.current()['text_muted']}'>Selecione um snippet na lista.</i>")
             self.warning.hide()
             return
         self.preview.setText(preview_html(s.body))

@@ -37,7 +37,8 @@ from PySide6.QtWidgets import (
 )
 
 from .geometry import Box, forty, handle_points, normalize, resize
-from .theme import AMARELO, AZUL, AZUL_ESCURO, DOURADO, FUNDO_CANVAS
+from . import theme
+from .theme import AMARELO, AZUL, AZUL_ESCURO
 
 HANDLE_PX = 10  # tamanho das alças na tela (não muda com o zoom)
 GAP = 40  # espaço entre imagens novas
@@ -184,7 +185,7 @@ class CalcView(QGraphicsView):
         self.setTransformationAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.ViewportAnchor.NoAnchor)
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
-        self.setBackgroundBrush(QColor(FUNDO_CANVAS))
+        self.apply_theme()
         self.setMouseTracking(True)
         self.setAcceptDrops(True)
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
@@ -204,6 +205,10 @@ class CalcView(QGraphicsView):
         self._last_scene = QPointF()
 
         self._first_layout_done = False
+
+    def apply_theme(self) -> None:
+        self.setBackgroundBrush(QColor(theme.current()["canvas"]))
+        self.viewport().update()
 
     # ------------------------------------------------------------------
     # Imagens
@@ -440,7 +445,7 @@ class CalcView(QGraphicsView):
         font = QFont(self.font())
         font.setPointSize(13)
         painter.setFont(font)
-        painter.setPen(QColor(AZUL_ESCURO))
+        painter.setPen(QColor(theme.current()["text"]))
         painter.drawText(
             vr,
             int(Qt.AlignmentFlag.AlignCenter),
@@ -471,9 +476,7 @@ class CalculatorTab(QWidget):
         bar.addWidget(self.btn_reset)
 
         self.zoom_label = QLabel()
-        self.zoom_label.setStyleSheet(
-            f"background: white; border: 1px solid {DOURADO}; border-radius: 10px; padding: 7px 14px; font-weight: 500;"
-        )
+        self.zoom_label.setObjectName("chipLabel")
         bar.addWidget(self.zoom_label)
 
         self.h_group, h_box = self._side_box("Horizontal:", [("Esquerda", "left"), ("Direita", "right")], "h")

@@ -1,28 +1,145 @@
-"""Cores e estilo, as mesmas do projeto web Produto Assertivo."""
+"""Cores e estilo (modo claro e modo escuro), com as cores do projeto Produto Assertivo.
+
+As cores da marca (azul #446E9B, azul escuro #2F437F, amarelo #FFC21A e dourado #E9CF7A)
+são as mesmas nos dois modos; no escuro mudam só fundos, textos e bordas neutras.
+"""
+from __future__ import annotations
+
 from PySide6.QtGui import QColor, QPalette
 
+# Cores da marca
 AZUL = "#446E9B"
 AZUL_ESCURO = "#2F437F"
 AMARELO = "#FFC21A"
 DOURADO = "#E9CF7A"
+
+# Mantidas para compatibilidade
 FUNDO = "#F8F8F8"
 CINZA_BOTAO = "#F4F4F4"
 FUNDO_CANVAS = "#dfdddd"
 
-STYLESHEET = f"""
+THEMES: dict[str, dict[str, str]] = {
+    "claro": {
+        "window": "#F8F8F8",
+        "sidebar": "#FFFFFF",
+        "surface": "#FFFFFF",
+        "surface_alt": "#FBFBFB",
+        "input": "#FFFFFF",
+        "text": AZUL_ESCURO,
+        "text_soft": AZUL,
+        "text_muted": "#8a9bb0",
+        "title": AZUL_ESCURO,
+        "border": DOURADO,
+        "chip": "#F4F4F4",
+        "chip_hover": "#e8edf3",
+        "chip_text": AZUL,
+        "chip_disabled_text": "#b5c0cc",
+        "button_disabled": "#aab9ca",
+        "button_disabled_text": "#eef2f6",
+        "canvas": "#dfdddd",
+        "warning_bg": "#FFF6DA",
+        "warning_text": "#8a5a00",
+        "field_highlight": "#FFEBA8",
+        "field_highlight_text": AZUL_ESCURO,
+        "scroll": "#d3dae3",
+    },
+    "escuro": {
+        "window": "#151922",
+        "sidebar": "#1B2029",
+        "surface": "#1E242F",
+        "surface_alt": "#232A36",
+        "input": "#232A36",
+        "text": "#DCE5F2",
+        "text_soft": "#9DB6D6",
+        "text_muted": "#6F819A",
+        "title": "#DCE5F2",
+        "border": "#5E5332",  # dourado escurecido, para não ofuscar
+        "chip": "#2A3241",
+        "chip_hover": "#323C4E",
+        "chip_text": "#9DB6D6",
+        "chip_disabled_text": "#56637a",
+        "button_disabled": "#2f3b4c",
+        "button_disabled_text": "#6f819a",
+        "canvas": "#2B2F36",
+        "warning_bg": "#3A3120",
+        "warning_text": "#F2D27A",
+        "field_highlight": "#5C4A12",
+        "field_highlight_text": "#FFE9A8",
+        "scroll": "#3a4456",
+    },
+}
+
+_current = "claro"
+
+
+def current_name() -> str:
+    return _current
+
+
+def current() -> dict[str, str]:
+    return THEMES[_current]
+
+
+def set_current(name: str) -> None:
+    global _current
+    _current = name if name in THEMES else "claro"
+
+
+def build_stylesheet(t: dict[str, str]) -> str:
+    return f"""
 QWidget {{
     font-family: "Segoe UI", Arial, sans-serif;
     font-size: 10pt;
-    color: {AZUL_ESCURO};
+    color: {t['text']};
 }}
-QMainWindow, QWidget#root {{ background: {FUNDO}; }}
+QMainWindow, QWidget#root, QWidget#page {{ background: {t['window']}; }}
+QScrollArea, QScrollArea > QWidget > QWidget#faqContent {{ background: {t['window']}; border: none; }}
 
-QLabel#title {{ font-size: 22pt; font-weight: 700; color: {AZUL_ESCURO}; }}
-QLabel#subtitle {{ color: {AZUL}; }}
-QLabel#hint {{ color: {AZUL}; }}
-QLabel#warning {{ color: #8a5a00; background: #FFF6DA; border: 1px solid {DOURADO}; border-radius: 8px; padding: 6px 10px; }}
+/* ---------- menu lateral ---------- */
+QFrame#sidebar {{ background: {t['sidebar']}; border-right: 1px solid {t['border']}; }}
+QLabel#title {{ font-size: 18pt; font-weight: 700; color: {t['title']}; padding: 4px 6px 12px 6px; }}
+QPushButton#navButton {{
+    text-align: left;
+    background: transparent;
+    color: {t['chip_text']};
+    border: none;
+    border-radius: 10px;
+    padding: 11px 16px;
+    font-size: 10.5pt;
+    font-weight: 600;
+}}
+QPushButton#navButton:hover {{ background: {t['chip_hover']}; }}
+QPushButton#navButton:checked {{ background: {AZUL}; color: white; }}
+QPushButton#themeButton {{
+    background: {t['chip']};
+    color: {t['chip_text']};
+    border: 1px solid {t['border']};
+    border-radius: 10px;
+    padding: 9px 12px;
+    font-weight: 600;
+}}
+QPushButton#themeButton:hover {{ background: {t['chip_hover']}; }}
+QLabel#version {{ color: {t['text_muted']}; font-size: 8.5pt; padding-left: 6px; }}
+
+QLabel#hint {{ color: {t['text_soft']}; }}
+QLabel#warning {{
+    color: {t['warning_text']};
+    background: {t['warning_bg']};
+    border: 1px solid {t['border']};
+    border-radius: 8px;
+    padding: 6px 10px;
+}}
 QLabel#sectionLabel {{ font-weight: 600; }}
+QLabel#preview {{ font-size: 11pt; padding: 8px; background: {t['surface_alt']}; border-radius: 8px; }}
+QLabel#chipLabel {{
+    background: {t['surface']};
+    border: 1px solid {DOURADO};
+    border-radius: 10px;
+    padding: 7px 14px;
+    font-weight: 500;
+}}
 
+/* ---------- botões ---------- */
 QPushButton {{
     background: {AZUL};
     color: white;
@@ -33,53 +150,39 @@ QPushButton {{
 }}
 QPushButton:hover {{ background: #3c6290; }}
 QPushButton:pressed {{ background: #345681; }}
-QPushButton:disabled {{ background: #aab9ca; color: #eef2f6; }}
+QPushButton:disabled {{ background: {t['button_disabled']}; color: {t['button_disabled_text']}; }}
 
 QPushButton[toggle="true"] {{
-    background: {CINZA_BOTAO};
-    color: {AZUL};
+    background: {t['chip']};
+    color: {t['chip_text']};
     border: none;
     border-radius: 8px;
     padding: 5px 12px;
 }}
 QPushButton[toggle="true"]:checked {{ background: {AMARELO}; color: {AZUL_ESCURO}; }}
-QPushButton[toggle="true"]:disabled {{ background: {CINZA_BOTAO}; color: #b5c0cc; }}
+QPushButton[toggle="true"]:disabled {{ background: {t['chip']}; color: {t['chip_disabled_text']}; }}
 
+/* ---------- cartões e campos ---------- */
 QFrame#card {{
-    background: white;
-    border: 1px solid {DOURADO};
+    background: {t['surface']};
+    border: 1px solid {t['border']};
     border-radius: 12px;
 }}
 QFrame#card QLabel {{ background: transparent; }}
-QFrame#card QLabel#warning {{ background: #FFF6DA; }}
-
-QTabWidget::pane {{
-    border: 1px solid {DOURADO};
-    border-radius: 12px;
-    background: white;
-    top: -1px;
-}}
-QTabBar::tab {{
-    background: {CINZA_BOTAO};
-    color: {AZUL};
-    padding: 9px 20px;
-    margin-right: 4px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    font-weight: 600;
-}}
-QTabBar::tab:selected {{ background: {AZUL}; color: white; }}
-QTabBar::tab:hover:!selected {{ background: #e8edf3; }}
+QFrame#card QLabel#warning {{ background: {t['warning_bg']}; }}
+QFrame#card QLabel#preview {{ background: {t['surface_alt']}; }}
 
 QPlainTextEdit, QLineEdit, QListWidget, QTextBrowser {{
-    background: white;
-    border: 1px solid {DOURADO};
+    background: {t['input']};
+    color: {t['text']};
+    border: 1px solid {t['border']};
     border-radius: 8px;
     padding: 6px;
     selection-background-color: {AMARELO};
     selection-color: {AZUL_ESCURO};
 }}
 QPlainTextEdit:focus, QLineEdit:focus {{ border: 1px solid {AZUL}; }}
+QFrame#card QPlainTextEdit#bareEditor {{ border: none; padding: 10px; background: {t['surface']}; }}
 QListWidget::item {{ padding: 5px 4px; border-radius: 6px; }}
 QListWidget::item:selected {{ background: {AMARELO}; color: {AZUL_ESCURO}; }}
 
@@ -90,25 +193,71 @@ QListWidget#suggestions {{
     padding: 2px;
 }}
 
-QGraphicsView {{ border: 1px solid {DOURADO}; border-radius: 12px; }}
+/* ---------- ajuda ---------- */
+QLabel#faqSection {{ font-size: 14pt; font-weight: 700; color: {t['title']}; padding-top: 10px; }}
+QPushButton#faqQuestion {{
+    text-align: left;
+    background: {t['chip']};
+    color: {t['title']};
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-weight: 600;
+    font-size: 10.5pt;
+}}
+QPushButton#faqQuestion:hover {{ background: {t['chip_hover']}; }}
+QPushButton#faqQuestion:checked {{
+    background: {AZUL};
+    color: white;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}}
+QLabel#faqAnswer {{
+    background: {t['surface']};
+    border: 1px solid {t['border']};
+    border-top: none;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    padding: 10px 16px;
+    font-size: 10.5pt;
+}}
+
+QGraphicsView {{ border: 1px solid {t['border']}; border-radius: 12px; }}
 QSplitter::handle {{ background: transparent; }}
-QToolTip {{ color: {AZUL_ESCURO}; background: white; border: 1px solid {DOURADO}; }}
+QToolTip {{ color: {t['text']}; background: {t['surface']}; border: 1px solid {t['border']}; }}
+
+QScrollBar:vertical {{ background: transparent; width: 10px; margin: 2px; }}
+QScrollBar::handle:vertical {{ background: {t['scroll']}; border-radius: 4px; min-height: 30px; }}
+QScrollBar:horizontal {{ background: transparent; height: 10px; margin: 2px; }}
+QScrollBar::handle:horizontal {{ background: {t['scroll']}; border-radius: 4px; min-width: 30px; }}
+QScrollBar::add-line, QScrollBar::sub-line {{ width: 0; height: 0; }}
+QScrollBar::add-page, QScrollBar::sub-page {{ background: transparent; }}
+
+QMessageBox, QDialog {{ background: {t['window']}; }}
 """
 
 
-def light_palette() -> QPalette:
-    """Força o tema claro mesmo se o Windows estiver no modo escuro."""
+def build_palette(t: dict[str, str]) -> QPalette:
+    """Paleta do Qt (usada por caixas de diálogo e partes não cobertas pelo estilo)."""
     p = QPalette()
-    p.setColor(QPalette.ColorRole.Window, QColor(FUNDO))
-    p.setColor(QPalette.ColorRole.WindowText, QColor(AZUL_ESCURO))
-    p.setColor(QPalette.ColorRole.Base, QColor("white"))
-    p.setColor(QPalette.ColorRole.AlternateBase, QColor(CINZA_BOTAO))
-    p.setColor(QPalette.ColorRole.Text, QColor(AZUL_ESCURO))
-    p.setColor(QPalette.ColorRole.Button, QColor(CINZA_BOTAO))
-    p.setColor(QPalette.ColorRole.ButtonText, QColor(AZUL_ESCURO))
+    p.setColor(QPalette.ColorRole.Window, QColor(t["window"]))
+    p.setColor(QPalette.ColorRole.WindowText, QColor(t["text"]))
+    p.setColor(QPalette.ColorRole.Base, QColor(t["input"]))
+    p.setColor(QPalette.ColorRole.AlternateBase, QColor(t["chip"]))
+    p.setColor(QPalette.ColorRole.Text, QColor(t["text"]))
+    p.setColor(QPalette.ColorRole.Button, QColor(t["chip"]))
+    p.setColor(QPalette.ColorRole.ButtonText, QColor(t["text"]))
     p.setColor(QPalette.ColorRole.Highlight, QColor(AMARELO))
     p.setColor(QPalette.ColorRole.HighlightedText, QColor(AZUL_ESCURO))
-    p.setColor(QPalette.ColorRole.ToolTipBase, QColor("white"))
-    p.setColor(QPalette.ColorRole.ToolTipText, QColor(AZUL_ESCURO))
-    p.setColor(QPalette.ColorRole.PlaceholderText, QColor("#8a9bb0"))
+    p.setColor(QPalette.ColorRole.ToolTipBase, QColor(t["surface"]))
+    p.setColor(QPalette.ColorRole.ToolTipText, QColor(t["text"]))
+    p.setColor(QPalette.ColorRole.PlaceholderText, QColor(t["text_muted"]))
     return p
+
+
+# Compatibilidade com o código antigo
+STYLESHEET = build_stylesheet(THEMES["claro"])
+
+
+def light_palette() -> QPalette:
+    return build_palette(THEMES["claro"])
