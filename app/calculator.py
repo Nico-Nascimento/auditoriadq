@@ -287,6 +287,33 @@ class CalcView(QGraphicsView):
     # ------------------------------------------------------------------
     # Zoom
     # ------------------------------------------------------------------
+    def _set_zoom(self, new: float) -> None:
+        self.zoom = new
+        for item in self.images:
+            item.set_view_scale(new)
+        self.zoomChanged.emit(new)
+
+    def fit_all(self) -> None:
+        """Ajusta o zoom e a posição para que todas as imagens caibam na área."""
+        if not self.images:
+            return
+        rect = None
+        for item in self.images:
+            r = item.mapRectToScene(item.image_rect())
+            if item.mark is not None:
+                r = r.united(item.mapRectToScene(_qrect(item.mark)))
+            rect = r if rect is None else rect.united(r)
+        vp = self.viewport().rect()
+        margin = 24
+        if rect.width() <= 0 or rect.height() <= 0 or vp.width() <= 2 * margin or vp.height() <= 2 * margin:
+            return
+        new = min((vp.width() - 2 * margin) / rect.width(), (vp.height() - 2 * margin) / rect.height())
+        new = max(MIN_SCALE, min(new, MAX_SCALE))
+        self.resetTransform()
+        self.scale(new, new)
+        self._set_zoom(new)
+        self.centerOn(rect.center())
+
     def wheelEvent(self, e) -> None:
         dy = e.angleDelta().y()
         if dy == 0:
@@ -297,10 +324,7 @@ class CalcView(QGraphicsView):
         if abs(factor - 1) < 1e-9:
             return
         self.scale(factor, factor)
-        self.zoom = new
-        for item in self.images:
-            item.set_view_scale(new)
-        self.zoomChanged.emit(new)
+        self._set_zoom(new)
 
     # ------------------------------------------------------------------
     # Mouse
@@ -474,6 +498,9 @@ class CalculatorTab(QWidget):
         bar.addWidget(self.btn_open)
         bar.addWidget(self.btn_remove)
         bar.addWidget(self.btn_reset)
+        self.btn_fit = QPushButton("Ajustar à tela")
+        self.btn_fit.setToolTip("Ajusta o zoom para exibir todas as imagens na área de visualização.")
+        bar.addWidget(self.btn_fit)
 
         self.zoom_label = QLabel()
         self.zoom_label.setObjectName("chipLabel")
@@ -510,6 +537,7 @@ class CalculatorTab(QWidget):
         self.view.selectionChanged.connect(self._sync_controls)
         self.view.zoomChanged.connect(self._update_zoom)
         self.view.imagesChanged.connect(lambda _n: self._sync_controls(self.view.selected))
+        self.btn_fit.clicked.connect(self.view.fit_all)
 
         paste = QShortcut(QKeySequence(QKeySequence.StandardKey.Paste), self)
         paste.setContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
@@ -553,6 +581,7 @@ class CalculatorTab(QWidget):
         has = item is not None
         self.btn_remove.setEnabled(has)
         self.btn_reset.setEnabled(has and item.mark is not None)
+        self.btn_fit.setEnabled(bool(self.view.images))
         for group, current in ((self.h_group, item.h_side if has else None),
                                (self.v_group, item.v_side if has else None)):
             group.setExclusive(False)  # permite desmarcar todos quando não há imagem

@@ -48,29 +48,40 @@ jobs:
             Write-Host "END-PNG"
           }
 
-      - name: Gerar o .exe
+      - name: Gerar o programa (pasta)
         run: >
-          python -m PyInstaller --noconfirm --clean --onefile --windowed
+          python -m PyInstaller --noconfirm --clean --onedir --windowed
           --name AuditoriaDQ
           --icon "app\assets\icone.ico"
           --add-data "app\snippets_padrao.json;app"
           --add-data "app\assets;app\assets"
           main.py
 
-      - name: Testar se o .exe abre
+      - name: Testar se o .exe abre (e se a segunda cópia só traz a primeira para a frente)
         shell: pwsh
         run: |
-          $p = Start-Process -FilePath "dist\AuditoriaDQ.exe" -PassThru
-          Start-Sleep -Seconds 20
+          $p = Start-Process -FilePath "dist\AuditoriaDQ\AuditoriaDQ.exe" -PassThru
+          Start-Sleep -Seconds 15
           if ($p.HasExited) { Write-Error "O .exe fechou sozinho (código $($p.ExitCode))"; exit 1 }
+          $p2 = Start-Process -FilePath "dist\AuditoriaDQ\AuditoriaDQ.exe" -PassThru
+          Start-Sleep -Seconds 10
+          if (-not $p2.HasExited) { Stop-Process -Id $p2.Id -Force; Write-Error "A segunda cópia não se encerrou"; exit 1 }
+          if ($p.HasExited) { Write-Error "A primeira cópia fechou"; exit 1 }
           Stop-Process -Id $p.Id -Force
-          Write-Host "O .exe abriu e continuou rodando."
+          Write-Host "O .exe abriu, continuou rodando e a segunda cópia se encerrou."
 
-      - name: Guardar o .exe
+      - name: Montar o .zip
+        shell: pwsh
+        run: |
+          Copy-Item "distribuicao\COMO INSTALAR.txt" "dist\AuditoriaDQ\"
+          Compress-Archive -Path "dist\AuditoriaDQ" -DestinationPath "dist\AuditoriaDQ.zip"
+          "{0:N1} MB" -f ((Get-Item "dist\AuditoriaDQ.zip").Length / 1MB)
+
+      - name: Guardar o .zip
         uses: actions/upload-artifact@v4
         with:
           name: AuditoriaDQ
-          path: dist/AuditoriaDQ.exe
+          path: dist/AuditoriaDQ.zip
 
       - name: Ler versão do programa
         id: versao
@@ -91,5 +102,5 @@ jobs:
           tag_name: ${{ steps.versao.outputs.tag }}
           name: AuditoriaDQ ${{ steps.versao.outputs.tag }}
           target_commitish: ${{ github.sha }}
-          files: dist/AuditoriaDQ.exe
+          files: dist/AuditoriaDQ.zip
           generate_release_notes: true

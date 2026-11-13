@@ -158,6 +158,12 @@ class SnippetsTab(QWidget):
         self.btn_import.clicked.connect(self.import_file)
         self.btn_export = QPushButton("Exportar arquivo…")
         self.btn_export.clicked.connect(self.export_file)
+        self.btn_defaults = QPushButton("Adicionar padrões ausentes")
+        self.btn_defaults.setToolTip(
+            "Adiciona os snippets do padrão atual que ainda não existem na sua lista, "
+            "sem alterar os que já existem."
+        )
+        self.btn_defaults.clicked.connect(self.add_missing_defaults)
         self.btn_folder = QPushButton("Abrir pasta do arquivo")
         self.btn_folder.clicked.connect(self.open_folder)
         self.path_label = QLabel()
@@ -165,6 +171,7 @@ class SnippetsTab(QWidget):
         self.path_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         bottom.addWidget(self.btn_import)
         bottom.addWidget(self.btn_export)
+        bottom.addWidget(self.btn_defaults)
         bottom.addWidget(self.btn_folder)
         bottom.addSpacing(10)
         bottom.addWidget(self.path_label, 1)
@@ -374,6 +381,31 @@ class SnippetsTab(QWidget):
             QMessageBox.warning(self, "Exportar snippets", f"Não foi possível salvar o arquivo:\n{exc}")
             return
         QMessageBox.information(self, "Exportar snippets", f"Arquivo salvo em:\n{path}")
+
+    def add_missing_defaults(self) -> None:
+        missing = self.store.missing_defaults()
+        if not missing:
+            QMessageBox.information(
+                self, "Padrões ausentes", "Todos os snippets do padrão atual já constam na sua lista."
+            )
+            return
+        names = "\n".join(f"• {s.prefix_text} — {s.name}" for s in missing)
+        ans = QMessageBox.question(
+            self,
+            "Padrões ausentes",
+            f"Os seguintes snippets do padrão atual não constam na sua lista:\n\n{names}\n\n"
+            "Deseja adicioná-los? Os snippets existentes não serão alterados.",
+        )
+        if ans != QMessageBox.StandardButton.Yes:
+            return
+        added = self.store.add_missing_defaults()
+        self.refresh_list()
+        if added:
+            item = self._find_item(added[0])
+            if item:
+                self.list.setCurrentItem(item)
+                self.list.scrollToItem(item)
+        QMessageBox.information(self, "Padrões ausentes", f"{len(added)} snippet(s) adicionado(s).")
 
     def open_folder(self) -> None:
         folder = str(self.store.path.parent)

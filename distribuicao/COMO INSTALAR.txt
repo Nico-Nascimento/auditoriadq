@@ -1,0 +1,22 @@
+AuditoriaDQ - Como instalar
+===========================
+
+1. Extraia esta pasta "AuditoriaDQ" para um local permanente do computador,
+   por exemplo: Documentos\AuditoriaDQ
+
+2. Dentro da pasta, execute o arquivo "AuditoriaDQ.exe".
+
+3. Para facilitar o acesso, clique com o botão direito em "AuditoriaDQ.exe"
+   e escolha "Mostrar mais opções" > "Enviar para" > "Área de trabalho (criar atalho)",
+   ou fixe o programa na barra de tarefas.
+
+Importante:
+- Não mova o "AuditoriaDQ.exe" para fora da pasta e não apague a pasta "_internal":
+  o programa precisa dos arquivos que estão nela.
+- Na primeira execução, o Windows pode exibir o aviso "O Windows protegeu o seu computador".
+  Nesse caso, clique em "Mais informações" e, em seguida, em "Executar assim mesmo".
+
+Atualização para uma nova versão:
+- Feche o programa, apague a pasta antiga e extraia a nova no mesmo lugar.
+- Os snippets, as anotações e as preferências ficam em %APPDATA%\AuditoriaDQ
+  e são mantidos na atualização.

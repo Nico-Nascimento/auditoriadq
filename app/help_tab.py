@@ -28,6 +28,11 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
                 "A preferência é registrada e mantida nas próximas utilizações do programa.",
             ),
             (
+                "Por que o programa não abre uma segunda janela?",
+                "Para evitar que duas janelas gravem ao mesmo tempo nos mesmos arquivos, o programa permite "
+                "apenas uma janela aberta. Ao executá-lo novamente, a janela já aberta é trazida para a frente.",
+            ),
+            (
                 "É necessário estar conectado à internet?",
                 "Não. O programa funciona integralmente no computador, inclusive o armazenamento dos snippets e "
                 "das anotações.",
@@ -90,6 +95,12 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
                 "<b>Ctrl + V</b>.",
             ),
             (
+                "O texto da auditoria é salvo?",
+                "Sim. O texto é salvo automaticamente enquanto é digitado. Caso o programa seja fechado, o texto "
+                "é recuperado na próxima abertura. Para iniciar uma nova auditoria, utilize "
+                "<b>Resetar formato</b>.",
+            ),
+            (
                 "Qual é a função do botão “Resetar formato”?",
                 "O botão apaga o texto atual e restaura o modelo padrão. Caso haja texto escrito, será solicitada "
                 "confirmação. Para desfazer a operação, pressione <b>Ctrl + Z</b> no editor.",
@@ -132,7 +143,8 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
                 "comparação;</li>"
                 "<li><b>sobre o fundo</b>: toda a área de visualização é movida.</li>"
                 "</ul>"
-                "A <b>roda do mouse</b> aplica zoom no ponto em que o cursor está posicionado (de 20% a 1000%).",
+                "A <b>roda do mouse</b> aplica zoom no ponto em que o cursor está posicionado (de 20% a 1000%). "
+                "O botão <b>Ajustar à tela</b> ajusta o zoom para exibir todas as imagens de uma só vez.",
             ),
             (
                 "O que é a imagem selecionada?",
@@ -182,6 +194,12 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
                 "Sim, o formato é o mesmo. O botão <b>Importar arquivo…</b> permite trazer um arquivo do VS Code, "
                 "adicionando-o aos snippets existentes ou substituindo-os. O botão <b>Exportar arquivo…</b> gera "
                 "um arquivo compatível com o VS Code.",
+            ),
+            (
+                "Como receber os novos snippets do padrão?",
+                "Quando uma nova versão do programa traz snippets padrão novos, utilize o botão "
+                "<b>Adicionar padrões ausentes</b>, na área Snippets. Somente os snippets que ainda não constam "
+                "na lista são adicionados; os snippets existentes, inclusive os editados, não são alterados.",
             ),
             (
                 "Onde os snippets ficam armazenados?",

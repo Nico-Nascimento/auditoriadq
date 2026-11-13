@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 
 from PySide6.QtCore import QRect, QSize, Qt, QTimer
 from PySide6.QtGui import QColor, QFont, QFontMetrics, QGuiApplication, QPainter, QTextCursor, QTextFormat
@@ -424,8 +425,9 @@ class AuditEditor(QPlainTextEdit):
 # A aba completa
 # ---------------------------------------------------------------------------
 class AuditTab(QWidget):
-    def __init__(self, store: SnippetStore, parent: QWidget | None = None):
+    def __init__(self, store: SnippetStore, save_path: Path | None = None, parent: QWidget | None = None):
         super().__init__(parent)
+        self.save_path = save_path
         root = QVBoxLayout(self)
         root.setContentsMargins(16, 16, 16, 16)
         root.setSpacing(12)
@@ -461,6 +463,40 @@ class AuditTab(QWidget):
         self._status_timer = QTimer(self)
         self._status_timer.setSingleShot(True)
         self._status_timer.timeout.connect(lambda: self.status.setText(""))
+
+        # Salvamento automático: o texto é recuperado se o programa for fechado sem querer
+        self._save_timer = QTimer(self)
+        self._save_timer.setSingleShot(True)
+        self._save_timer.setInterval(800)
+        self._save_timer.timeout.connect(self.save_now)
+        self._restore()
+        self.editor.textChanged.connect(self._save_timer.start)
+
+    def _restore(self) -> None:
+        if self.save_path is None or not self.save_path.exists():
+            return
+        try:
+            text = self.save_path.read_text(encoding="utf-8")
+        except OSError:
+            return
+        if text.strip() and text.strip() != TEMPLATE.strip():
+            self.editor.setPlainText(text)
+            c = self.editor.textCursor()
+            c.movePosition(QTextCursor.MoveOperation.End)
+            self.editor.setTextCursor(c)
+            self._flash("✔ O texto da última sessão foi recuperado")
+
+    def save_now(self) -> None:
+        self._save_timer.stop()
+        if self.save_path is None:
+            return
+        try:
+            self.save_path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = self.save_path.with_suffix(self.save_path.suffix + ".tmp")
+            tmp.write_text(self.editor.toPlainText(), encoding="utf-8")
+            tmp.replace(self.save_path)
+        except OSError as exc:
+            self.status.setText(f"⚠ Não foi possível salvar o texto da auditoria: {exc}")
 
     def _flash(self, msg: str) -> None:
         self.status.setText(msg)

@@ -4,7 +4,7 @@ import sys
 import time
 import traceback
 
-from PySide6.QtCore import QCoreApplication, QSettings
+from PySide6.QtCore import QCoreApplication, QSettings, Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QApplication,
@@ -26,6 +26,7 @@ from .editor import AuditTab
 from .help_tab import HelpTab
 from .notes_tab import NotesTab
 from .resources import resource_path
+from .single_instance import SingleInstance
 from .snippets_tab import SnippetsTab
 from .store import SnippetStore, user_data_dir
 
@@ -70,7 +71,7 @@ class MainWindow(QMainWindow):
 
         # ---------------- páginas ----------------
         self.tabs = QStackedWidget()  # mantém o nome "tabs" (usado pelo teste)
-        self.audit = AuditTab(store)
+        self.audit = AuditTab(store, data_dir / "auditoria.txt")
         self.calc = CalculatorTab()
         self.notes = NotesTab(data_dir / "anotacoes.txt")
         self.snippets = SnippetsTab(store)
@@ -141,9 +142,17 @@ class MainWindow(QMainWindow):
     def toggle_theme(self) -> None:
         self.set_theme("claro" if theme.current_name() == "escuro" else "escuro")
 
+    def bring_to_front(self) -> None:
+        state = self.windowState() & ~Qt.WindowState.WindowMinimized
+        self.setWindowState(state | Qt.WindowState.WindowActive)
+        self.show()
+        self.raise_()
+        self.activateWindow()
+
     def closeEvent(self, e) -> None:
         self.store.save_now()
         self.notes.save_now()
+        self.audit.save_now()
         self.settings.sync()
         super().closeEvent(e)
 
@@ -194,10 +203,15 @@ def run() -> int:
             pass
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon(str(resource_path("app", "assets", "icone.ico"))))
-    apply_style(app)
 
+    instance = SingleInstance()
+    if instance.already_running():
+        return 0  # a janela que já estava aberta vem para a frente
+
+    apply_style(app)
     store = SnippetStore()
     win = MainWindow(store)
+    instance.activated.connect(win.bring_to_front)
     win.showMaximized()
     win.audit.editor.setFocus()
     if store.load_warning:

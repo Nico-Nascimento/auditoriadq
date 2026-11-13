@@ -92,6 +92,25 @@ class SnippetStore(QObject):
         self.save_now()
         self.changed.emit()
 
+    def missing_defaults(self) -> list[Snippet]:
+        """Snippets do padrão que a pessoa ainda não tem (pelo nome ou pelo mesmo prefixo + frase)."""
+        default = resource_path("app", "snippets_padrao.json")
+        if not default.exists():
+            return []
+        names = {s.name.strip().casefold() for s in self.snippets}
+        pairs = {(tuple(p.casefold() for p in s.prefixes), s.body) for s in self.snippets}
+        return [
+            d for d in load_snippets_file(default)
+            if d.name.strip().casefold() not in names
+            and (tuple(p.casefold() for p in d.prefixes), d.body) not in pairs
+        ]
+
+    def add_missing_defaults(self) -> list[Snippet]:
+        missing = self.missing_defaults()
+        if missing:
+            self.replace_all(self.snippets + missing)
+        return missing
+
     def add(self, snippet: Snippet) -> None:
         self.snippets.append(snippet)
         self.schedule_save()

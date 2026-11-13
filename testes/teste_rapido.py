@@ -18,7 +18,8 @@ from PySide6.QtTest import QTest  # noqa: E402
 from PySide6.QtWidgets import QApplication  # noqa: E402
 
 from app import theme  # noqa: E402
-from app.editor import TEMPLATE  # noqa: E402
+from app.editor import TEMPLATE, AuditTab  # noqa: E402
+from app.single_instance import SingleInstance  # noqa: E402
 from app.main_window import MainWindow, apply_style  # noqa: E402
 from app.store import SnippetStore  # noqa: E402
 
@@ -91,6 +92,13 @@ def main() -> None:
     QTest.keyClick(ed, Qt.Key.Key_Escape)
     check(ed.session is None, "Esc encerra o preenchimento")
 
+    win.audit.save_now()
+    saved = (tmp.parent / "auditoria.txt").read_text(encoding="utf-8")
+    check(saved == ed.toPlainText(), "texto da auditoria é salvo no arquivo")
+    restored = AuditTab(store, tmp.parent / "auditoria.txt")
+    check(restored.editor.toPlainText() == saved, "texto da auditoria é recuperado ao abrir")
+    restored.deleteLater()
+
     ed.reset_template()
     check(ed.toPlainText() == TEMPLATE, "Resetar formato volta ao modelo")
 
@@ -135,8 +143,15 @@ def main() -> None:
     QTest.mouseRelease(view.viewport(), Qt.MouseButton.RightButton, Qt.KeyboardModifier.NoModifier, vp(a, 40, 30))
     check(a.pos() != old and a.mark is None, "botão direito arrasta a imagem sem marcar")
 
+    big = QPixmap(3000, 2000)
+    big.fill(QColor("#3366cc"))
+    view.add_pixmap(big, "grande")
+    win.calc.btn_fit.click()
+    visible = view.mapToScene(view.viewport().rect()).boundingRect()
+    check(all(visible.contains(i.mapRectToScene(i.image_rect())) for i in view.images),
+          "Ajustar à tela mostra todas as imagens")
     win.calc.btn_remove.click()
-    check(len(view.images) == 1, "Remover imagem tira só a selecionada")
+    check(len(view.images) == 2, "Remover imagem tira só a selecionada")
 
     print("Anotações")
     win.tabs.setCurrentWidget(win.notes)
@@ -155,6 +170,22 @@ def main() -> None:
     (edited_dir / "snippets.json").write_text('{"Meu": {"prefix": "x", "body": ["y"]}}', encoding="utf-8")
     kept = SnippetStore(path=edited_dir / "snippets.json")
     check(not kept.updated_defaults and len(kept.snippets) == 1, "arquivo editado pela pessoa é mantido")
+    check(len(kept.missing_defaults()) == 25, "padrões ausentes são identificados")
+    upgraded.snippets = [s for s in upgraded.snippets if s.prefixes != ["dpl"]]
+    upgraded.snippets[0].body = "frase editada"
+    added = upgraded.add_missing_defaults()
+    check([s.prefix_text for s in added] == ["dpl"], "só o padrão ausente é adicionado; o editado é mantido")
+
+    print("Janela única")
+    name = f"AuditoriaDQ-teste-{os.getpid()}"
+    first = SingleInstance(name)
+    check(not first.already_running(), "primeira cópia passa a ser a principal")
+    pings = []
+    first.activated.connect(lambda: pings.append(1))
+    second = SingleInstance(name)
+    check(second.already_running(), "segunda cópia percebe que já existe uma aberta")
+    QTest.qWait(300)
+    check(len(pings) == 1, "a cópia principal recebe o pedido para vir à frente")
     win.tabs.setCurrentWidget(win.snippets)
     check(win.snippets.list.count() == len(store.snippets) == 25, "aba Snippets lista os 25 snippets")
     win.tabs.setCurrentWidget(win.help)
