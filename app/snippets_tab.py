@@ -11,7 +11,6 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QFormLayout,
     QFrame,
-    QHBoxLayout,
     QLabel,
     QLineEdit,
     QListWidget,
@@ -32,6 +31,7 @@ from .snippets import (
     same_prefix_conflicts,
     snippets_to_text,
 )
+from .layout import FlowLayout, StatusLine, hint_label
 from .store import SnippetStore
 from . import theme
 
@@ -71,6 +71,35 @@ class SnippetsTab(QWidget):
         root.setContentsMargins(16, 16, 16, 16)
         root.setSpacing(12)
 
+        # 1) botões  2) texto explicativo  3) confirmação das ações
+        bar = FlowLayout()
+        self.btn_new = QPushButton("Novo snippet")
+        self.btn_new.clicked.connect(self.new_snippet)
+        self.btn_delete = QPushButton("Excluir")
+        self.btn_delete.clicked.connect(self.delete_snippet)
+        self.btn_import = QPushButton("Importar arquivo…")
+        self.btn_import.clicked.connect(self.import_file)
+        self.btn_export = QPushButton("Exportar arquivo…")
+        self.btn_export.clicked.connect(self.export_file)
+        self.btn_defaults = QPushButton("Adicionar padrões ausentes")
+        self.btn_defaults.setToolTip(
+            "Adiciona os snippets do padrão atual que ainda não existem na sua lista, "
+            "sem alterar os que já existem."
+        )
+        self.btn_defaults.clicked.connect(self.add_missing_defaults)
+        self.btn_folder = QPushButton("Abrir pasta do arquivo")
+        self.btn_folder.clicked.connect(self.open_folder)
+        for b in (self.btn_new, self.btn_delete, self.btn_import, self.btn_export, self.btn_defaults,
+                  self.btn_folder):
+            bar.addWidget(b)
+        root.addLayout(bar)
+
+        self.path_label = hint_label("")
+        self.path_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        root.addWidget(self.path_label)
+        self.status = StatusLine()
+        root.addWidget(self.status)
+
         splitter = QSplitter(Qt.Orientation.Horizontal)
         root.addWidget(splitter, 1)
 
@@ -88,14 +117,6 @@ class SnippetsTab(QWidget):
         self.list.currentItemChanged.connect(self._on_select)
         lv.addWidget(self.list, 1)
 
-        lb = QHBoxLayout()
-        self.btn_new = QPushButton("Novo snippet")
-        self.btn_new.clicked.connect(self.new_snippet)
-        self.btn_delete = QPushButton("Excluir")
-        self.btn_delete.clicked.connect(self.delete_snippet)
-        lb.addWidget(self.btn_new)
-        lb.addWidget(self.btn_delete)
-        lv.addLayout(lb)
         splitter.addWidget(left)
 
         # ---------------- formulário ----------------
@@ -152,30 +173,6 @@ class SnippetsTab(QWidget):
         self.ed_prefix.textEdited.connect(self._on_edit)
         self.ed_body.textChanged.connect(self._on_edit)
 
-        # ---------------- rodapé ----------------
-        bottom = QHBoxLayout()
-        self.btn_import = QPushButton("Importar arquivo…")
-        self.btn_import.clicked.connect(self.import_file)
-        self.btn_export = QPushButton("Exportar arquivo…")
-        self.btn_export.clicked.connect(self.export_file)
-        self.btn_defaults = QPushButton("Adicionar padrões ausentes")
-        self.btn_defaults.setToolTip(
-            "Adiciona os snippets do padrão atual que ainda não existem na sua lista, "
-            "sem alterar os que já existem."
-        )
-        self.btn_defaults.clicked.connect(self.add_missing_defaults)
-        self.btn_folder = QPushButton("Abrir pasta do arquivo")
-        self.btn_folder.clicked.connect(self.open_folder)
-        self.path_label = QLabel()
-        self.path_label.setObjectName("hint")
-        self.path_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-        bottom.addWidget(self.btn_import)
-        bottom.addWidget(self.btn_export)
-        bottom.addWidget(self.btn_defaults)
-        bottom.addWidget(self.btn_folder)
-        bottom.addSpacing(10)
-        bottom.addWidget(self.path_label, 1)
-        root.addLayout(bottom)
 
         self.store.changed.connect(self._on_store_changed)
         self.refresh_list()
@@ -192,7 +189,10 @@ class SnippetsTab(QWidget):
         return f"{prefix}   —   {s.name}"
 
     def _update_path_label(self) -> None:
-        self.path_label.setText(f"Arquivo de snippets: {self.store.path}")
+        self.path_label.setText(
+            "Cadastre os prefixos e as frases utilizados na área Auditoria. As alterações são salvas "
+            f"automaticamente em: {self.store.path}"
+        )
 
     def refresh_list(self) -> None:
         query = self.search.text().strip().casefold()
@@ -351,14 +351,12 @@ class SnippetsTab(QWidget):
         if clicked is btn_replace:
             self.current = None
             self.store.replace_all(imported)
+            self.status.flash(f"✔ Os snippets foram substituídos pelos {len(imported)} do arquivo importado.", 4000)
         elif clicked is btn_add:
             existing = {(s.name, tuple(s.prefixes), s.body) for s in self.store.snippets}
             new = [s for s in imported if (s.name, tuple(s.prefixes), s.body) not in existing]
             self.store.replace_all(self.store.snippets + new)
-            QMessageBox.information(
-                self, "Importar snippets",
-                f"{len(new)} snippets foram adicionados ({len(imported) - len(new)} já existiam).",
-            )
+            self.status.flash(f"✔ {len(new)} snippets foram adicionados ({len(imported) - len(new)} já existiam).", 4000)
         else:
             return
         self.refresh_list()
@@ -380,14 +378,12 @@ class SnippetsTab(QWidget):
         except OSError as exc:
             QMessageBox.warning(self, "Exportar snippets", f"Não foi possível salvar o arquivo:\n{exc}")
             return
-        QMessageBox.information(self, "Exportar snippets", f"Arquivo salvo em:\n{path}")
+        self.status.flash(f"✔ Arquivo exportado para: {path}", 5000)
 
     def add_missing_defaults(self) -> None:
         missing = self.store.missing_defaults()
         if not missing:
-            QMessageBox.information(
-                self, "Padrões ausentes", "Todos os snippets do padrão atual já constam na sua lista."
-            )
+            self.status.flash("✔ Todos os snippets do padrão atual já constam na sua lista.", 4000)
             return
         names = "\n".join(f"• {s.prefix_text} — {s.name}" for s in missing)
         ans = QMessageBox.question(
@@ -405,7 +401,7 @@ class SnippetsTab(QWidget):
             if item:
                 self.list.setCurrentItem(item)
                 self.list.scrollToItem(item)
-        QMessageBox.information(self, "Padrões ausentes", f"{len(added)} snippet(s) adicionado(s).")
+        self.status.flash(f"✔ {len(added)} snippet(s) adicionado(s).", 4000)
 
     def open_folder(self) -> None:
         folder = str(self.store.path.parent)

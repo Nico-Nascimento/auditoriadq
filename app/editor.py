@@ -8,8 +8,6 @@ from PySide6.QtCore import QRect, QSize, Qt, QTimer
 from PySide6.QtGui import QColor, QFont, QFontMetrics, QGuiApplication, QPainter, QTextCursor, QTextFormat
 from PySide6.QtWidgets import (
     QFrame,
-    QHBoxLayout,
-    QLabel,
     QListWidget,
     QListWidgetItem,
     QMessageBox,
@@ -24,6 +22,7 @@ from PySide6.QtWidgets import (
 
 from .snippets import Snippet, is_word_char, parse_body
 from .store import SnippetStore
+from .layout import FlowLayout, StatusLine, hint_label
 from .zoom import FontZoom, ZoomControls
 
 TEMPLATE = (
@@ -439,23 +438,21 @@ class AuditTab(QWidget):
         root.setContentsMargins(16, 16, 16, 16)
         root.setSpacing(12)
 
-        bar = QHBoxLayout()
+        # 1) botões  2) texto explicativo  3) confirmação das ações
+        bar = FlowLayout()
         self.btn_copy = QPushButton("Copiar tudo")
         self.btn_copy.clicked.connect(self.copy_all)
         self.btn_reset = QPushButton("Resetar formato")
         self.btn_reset.clicked.connect(self.reset_format)
         bar.addWidget(self.btn_copy)
         bar.addWidget(self.btn_reset)
-        bar.addSpacing(12)
-        self.status = QLabel("")
-        self.status.setObjectName("hint")
-        bar.addWidget(self.status)
-        bar.addStretch(1)
-        hint = QLabel("Digite um prefixo (por exemplo, <b>dp1</b> ou <b>cr</b>) e pressione <b>Tab</b> · "
-                      "<b>Tab</b> e <b>Shift+Tab</b> navegam entre os campos · <b>Esc</b> encerra o preenchimento")
-        hint.setObjectName("hint")
-        bar.addWidget(hint)
         root.addLayout(bar)
+        root.addWidget(hint_label(
+            "Digite um prefixo (por exemplo, <b>dp1</b> ou <b>cr</b>) e pressione <b>Tab</b> · "
+            "<b>Tab</b> e <b>Shift+Tab</b> navegam entre os campos · <b>Esc</b> encerra o preenchimento"
+        ))
+        self.status = StatusLine()
+        root.addWidget(self.status)
 
         card = QFrame()
         card.setObjectName("card")
@@ -468,12 +465,7 @@ class AuditTab(QWidget):
         root.addWidget(card, 1)
 
         self.zoom = FontZoom(self.editor, settings, "fonte/auditoria")
-        bar.addSpacing(10)
         bar.addWidget(ZoomControls(self.zoom))
-
-        self._status_timer = QTimer(self)
-        self._status_timer.setSingleShot(True)
-        self._status_timer.timeout.connect(lambda: self.status.setText(""))
 
         # Salvamento automático: o texto é recuperado se o programa for fechado sem querer
         self._save_timer = QTimer(self)
@@ -507,11 +499,10 @@ class AuditTab(QWidget):
             tmp.write_text(self.editor.toPlainText(), encoding="utf-8")
             tmp.replace(self.save_path)
         except OSError as exc:
-            self.status.setText(f"⚠ Não foi possível salvar o texto da auditoria: {exc}")
+            self.status.show_message(f"⚠ Não foi possível salvar o texto da auditoria: {exc}")
 
     def _flash(self, msg: str) -> None:
-        self.status.setText(msg)
-        self._status_timer.start(2500)
+        self.status.flash(msg)
 
     def copy_all(self) -> None:
         QGuiApplication.clipboard().setText(self.editor.toPlainText())

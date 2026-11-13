@@ -23,8 +23,6 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import (
     QFrame,
-    QHBoxLayout,
-    QLabel,
     QMenu,
     QPushButton,
     QTextEdit,
@@ -33,6 +31,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from .layout import FlowLayout, StatusLine, hint_label
 from .zoom import FontZoom, ZoomControls
 
 # Cores escolhidas para ficarem legíveis no modo claro e no modo escuro
@@ -103,12 +102,11 @@ class NotesTab(QWidget):
         root.setSpacing(12)
 
         # ---------------- barra superior ----------------
-        bar = QHBoxLayout()
-        bar.setSpacing(6)
+        # 1) botões  2) texto explicativo  3) confirmação das ações
+        bar = FlowLayout(spacing=6)
         self.btn_copy = QPushButton("Copiar tudo")
         self.btn_copy.clicked.connect(self.copy_all)
         bar.addWidget(self.btn_copy)
-        bar.addSpacing(10)
 
         self.btn_bold = self._fmt_button("N", "Negrito (Ctrl + N ou Ctrl + B)")
         self.btn_bold.setStyleSheet("font-weight: 800; min-width: 18px;")
@@ -141,21 +139,14 @@ class NotesTab(QWidget):
         self.btn_clear.setCheckable(False)
         self.btn_clear.clicked.connect(self.clear_formatting)
         bar.addWidget(self.btn_clear)
-
-        bar.addSpacing(10)
-        self.status = QLabel("")
-        self.status.setObjectName("hint")
-        bar.addWidget(self.status)
-        bar.addStretch(1)
         root.addLayout(bar)
 
-        info = QLabel(
+        root.addWidget(hint_label(
             "Espaço livre para anotações. Selecione um trecho para aplicar cor, marca-texto, negrito ou itálico. "
             "O conteúdo é salvo automaticamente neste computador."
-        )
-        info.setObjectName("hint")
-        info.setWordWrap(True)
-        root.addWidget(info)
+        ))
+        self.status = StatusLine()
+        root.addWidget(self.status)
 
         # ---------------- editor ----------------
         card = QFrame()
@@ -182,10 +173,6 @@ class NotesTab(QWidget):
         self._save_timer.setSingleShot(True)
         self._save_timer.setInterval(600)
         self._save_timer.timeout.connect(self.save_now)
-
-        self._status_timer = QTimer(self)
-        self._status_timer.setSingleShot(True)
-        self._status_timer.timeout.connect(lambda: self.status.setText(""))
 
         self._load()
         self.editor.textChanged.connect(self._on_change)
@@ -318,7 +305,7 @@ class NotesTab(QWidget):
         self.editor.document().setModified(False)
 
     def _on_change(self) -> None:
-        self.status.setText("Salvando…")
+        self.status.show_message("Salvando…")
         self._save_timer.start()
 
     def save_now(self) -> None:
@@ -330,11 +317,10 @@ class NotesTab(QWidget):
             tmp.replace(self.path)
             self._flash("✔ Salvo")
         except OSError as exc:
-            self.status.setText(f"⚠ Não foi possível salvar: {exc}")
+            self.status.show_message(f"⚠ Não foi possível salvar as anotações: {exc}")
 
     def _flash(self, msg: str) -> None:
-        self.status.setText(msg)
-        self._status_timer.start(2000)
+        self.status.flash(msg, 2000)
 
     def copy_all(self) -> None:
         md = QMimeData()

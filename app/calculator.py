@@ -36,6 +36,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from .layout import FlowLayout, hint_label
 from .geometry import Box, forty, handle_points, normalize, resize
 from . import theme
 from .theme import AMARELO, AZUL, AZUL_ESCURO
@@ -487,8 +488,8 @@ class CalculatorTab(QWidget):
         root.setContentsMargins(16, 16, 16, 16)
         root.setSpacing(12)
 
-        bar = QHBoxLayout()
-        bar.setSpacing(10)
+        # 1) botões  2) texto explicativo
+        bar = FlowLayout()
         self.btn_open = QPushButton("Selecionar imagens")
         self.btn_open.clicked.connect(self.open_files)
         self.btn_remove = QPushButton("Remover imagem")
@@ -510,17 +511,13 @@ class CalculatorTab(QWidget):
         self.v_group, v_box = self._side_box("Vertical:", [("Superior", "top"), ("Inferior", "bottom")], "v")
         bar.addWidget(h_box)
         bar.addWidget(v_box)
-        bar.addStretch(1)
         root.addLayout(bar)
 
-        hint = QLabel(
+        root.addWidget(hint_label(
             "<b>Botão esquerdo</b>: marcação · <b>Botão direito</b> (pressionado): move a imagem; sobre o fundo, "
             "move toda a área · <b>Roda do mouse</b>: zoom · As opções acima se aplicam à imagem selecionada "
             "(indicada pela borda tracejada)."
-        )
-        hint.setObjectName("hint")
-        hint.setWordWrap(True)
-        root.addWidget(hint)
+        ))
 
         # A área cinza fica dentro de um quadro arredondado; a margem interna evita que os
         # cantos retos da área de desenho apareçam por fora da borda arredondada.

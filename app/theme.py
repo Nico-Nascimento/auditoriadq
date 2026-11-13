@@ -119,6 +119,7 @@ QPushButton#themeButton:hover {{ background: {t['chip_hover']}; }}
 QLabel#version {{ color: {t['text_muted']}; font-size: 8.5pt; padding-left: 6px; }}
 
 QLabel#hint {{ color: {t['text_soft']}; }}
+QLabel#statusLine {{ color: {t['text_soft']}; font-weight: 600; }}
 QLabel#warning {{
     color: {t['warning_text']};
     background: {t['warning_bg']};

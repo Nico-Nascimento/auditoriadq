@@ -216,6 +216,23 @@ def main() -> None:
         area.zoom.reset()
         check(area.editor.font().pointSize() == 12, f"Ctrl+0 volta a 100% ({area.zoom.key})")
 
+    print("Layout")
+    QTest.qWait(50)
+    widths = {}
+    for i in range(win.tabs.count()):
+        win.nav.button(i).click()
+        QTest.qWait(30)
+        widths[win.nav.button(i).text()] = win.minimumSizeHint().width()
+    print("    largura mínima da janela por área:", widths)
+    check(max(widths.values()) <= 1000, "janela pode ser reduzida (largura mínima até 1000 px)")
+    win.nav.button(0).click()
+    before = win.minimumSizeHint().width()
+    win.audit._flash("✔ " + "mensagem muito longa " * 30)
+    win.notes._flash("✔ " + "mensagem muito longa " * 30)
+    win.snippets.status.flash("✔ " + "mensagem muito longa " * 30)
+    QTest.qWait(50)
+    check(win.minimumSizeHint().width() == before, "mensagens de confirmação não alteram o tamanho da janela")
+
     print("Snippets e Ajuda")
     old_dir = Path(tempfile.mkdtemp())
     shutil.copyfile(Path(__file__).with_name("snippets_padrao_v1.json"), old_dir / "snippets.json")
