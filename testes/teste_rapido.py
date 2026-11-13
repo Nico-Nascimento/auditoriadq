@@ -13,12 +13,13 @@ if "--janela" not in sys.argv:
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from PySide6.QtCore import QPoint, QPointF, Qt  # noqa: E402
-from PySide6.QtGui import QColor, QPixmap  # noqa: E402
+from PySide6.QtGui import QColor, QFont, QPixmap, QTextCursor, QTextFormat  # noqa: E402
 from PySide6.QtTest import QTest  # noqa: E402
 from PySide6.QtWidgets import QApplication  # noqa: E402
 
 from app import theme  # noqa: E402
 from app.editor import TEMPLATE, AuditTab  # noqa: E402
+from app.notes_tab import NotesTab  # noqa: E402
 from app.single_instance import SingleInstance  # noqa: E402
 from app.main_window import MainWindow, apply_style  # noqa: E402
 from app.store import SnippetStore  # noqa: E402
@@ -156,10 +157,64 @@ def main() -> None:
     print("Anotações")
     win.tabs.setCurrentWidget(win.notes)
     check(win.nav.checkedId() == win.tabs.indexOf(win.notes), "menu lateral acompanha a área aberta")
-    QTest.keyClicks(win.notes.editor, "Lembrar de revisar a loja 15")
+    ne = win.notes.editor
+    ne.setFocus()
+    QTest.keyClicks(ne, "Lembrar de revisar a loja 15")
+    c = ne.textCursor()
+    c.setPosition(0)
+    c.movePosition(QTextCursor.MoveOperation.EndOfWord, QTextCursor.MoveMode.KeepAnchor)
+    ne.setTextCursor(c)
+    check(c.selectedText() == "Lembrar", "palavra selecionada nas anotações")
+    win.notes.btn_bold.click()
+    win.notes.btn_italic.click()
+    win.notes.set_text_color("#E53935")
+
+    def fmt_at(editor, pos):
+        cur = QTextCursor(editor.document())
+        cur.setPosition(pos + 1)
+        return cur.charFormat()
+
+    f0 = fmt_at(ne, 0)
+    check(f0.fontWeight() >= QFont.Weight.Bold.value and f0.fontItalic(), "negrito e itálico aplicados")
+    check(f0.foreground().color().name().lower() == "#e53935", "cor do texto aplicada")
+    check(fmt_at(ne, 10).fontWeight() < QFont.Weight.Bold.value, "o resto do texto não foi alterado")
+    c = ne.textCursor()
+    c.setPosition(len("Lembrar de "))
+    c.movePosition(QTextCursor.MoveOperation.EndOfWord, QTextCursor.MoveMode.KeepAnchor)
+    ne.setTextCursor(c)
+    win.notes.set_highlight("#FFE066")
+    check(fmt_at(ne, len("Lembrar de ")).background().color().name().lower() == "#ffe066", "marca-texto aplicado")
     win.notes.save_now()
-    notes_file = tmp.parent / "anotacoes.txt"
-    check(notes_file.read_text(encoding="utf-8") == "Lembrar de revisar a loja 15", "anotações são salvas no arquivo")
+    notes_file = tmp.parent / "anotacoes.html"
+    reopened = NotesTab(notes_file)
+    rf = fmt_at(reopened.editor, 0)
+    check(reopened.editor.toPlainText() == "Lembrar de revisar a loja 15", "anotações são salvas e recuperadas")
+    check(rf.fontWeight() >= QFont.Weight.Bold.value and rf.foreground().color().name().lower() == "#e53935",
+          "formatação é mantida ao reabrir")
+    reopened.deleteLater()
+    shot(win, "anotacoes-formatadas")
+    c = ne.textCursor()
+    c.select(QTextCursor.SelectionType.Document)
+    ne.setTextCursor(c)
+    win.notes.clear_formatting()
+    f0 = fmt_at(ne, 0)
+    check(not f0.hasProperty(QTextFormat.Property.ForegroundBrush.value) and f0.fontWeight() < QFont.Weight.Bold.value,
+          "Limpar formatação remove cor e negrito")
+    old_dir = Path(tempfile.mkdtemp())
+    (old_dir / "anotacoes.txt").write_text("nota antiga", encoding="utf-8")
+    migrated = NotesTab(old_dir / "anotacoes.html")
+    check(migrated.editor.toPlainText() == "nota antiga", "anotações da versão anterior são carregadas")
+    migrated.deleteLater()
+
+    print("Zoom do texto")
+    for area in (win.audit, win.notes):
+        base = area.zoom.size
+        area.zoom.zoom_in()
+        area.zoom.zoom_in()
+        check(area.editor.font().pointSize() == base + 2, f"zoom aumenta a letra ({area.zoom.key})")
+        check(int(win.settings.value(area.zoom.key)) == base + 2, f"tamanho da letra fica salvo ({area.zoom.key})")
+        area.zoom.reset()
+        check(area.editor.font().pointSize() == 12, f"Ctrl+0 volta a 100% ({area.zoom.key})")
 
     print("Snippets e Ajuda")
     old_dir = Path(tempfile.mkdtemp())

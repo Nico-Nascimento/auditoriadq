@@ -95,6 +95,13 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
                 "<b>Ctrl + V</b>.",
             ),
             (
+                "Como aumentar ou diminuir o tamanho do texto?",
+                "Nas áreas <b>Auditoria</b> e <b>Anotações</b>, utilize os botões <b>A−</b> e <b>A+</b>, no "
+                "canto superior direito, ou mantenha <b>Ctrl</b> pressionado e gire a roda do mouse. Também é "
+                "possível utilizar <b>Ctrl + +</b>, <b>Ctrl + −</b> e <b>Ctrl + 0</b> (volta a 100%). O tamanho "
+                "escolhido é mantido nas próximas utilizações.",
+            ),
+            (
                 "O texto da auditoria é salvo?",
                 "Sim. O texto é salvo automaticamente enquanto é digitado. Caso o programa seja fechado, o texto "
                 "é recuperado na próxima abertura. Para iniciar uma nova auditoria, utilize "
@@ -161,8 +168,23 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
             (
                 "Qual é a finalidade da área de Anotações?",
                 "É um bloco de notas livre, sem snippets e sem modelo. O conteúdo é salvo automaticamente neste "
-                "computador (<code>AppData\\Roaming\\AuditoriaDQ\\anotacoes.txt</code>) e permanece "
-                "disponível ao reabrir o programa. O botão <b>Copiar tudo</b> copia as anotações.",
+                "computador (<code>AppData\\Roaming\\AuditoriaDQ\\anotacoes.html</code>) e permanece "
+                "disponível ao reabrir o programa. O botão <b>Copiar tudo</b> copia as anotações; ao colar no "
+                "Word ou no Outlook, a formatação é mantida.",
+            ),
+            (
+                "Como destacar trechos das anotações?",
+                "Selecione a palavra ou o trecho desejado e utilize os botões da barra superior:"
+                "<ul>"
+                "<li><b>N</b>: negrito (<b>Ctrl + N</b> ou <b>Ctrl + B</b>);</li>"
+                "<li><b>I</b>: itálico (<b>Ctrl + I</b>);</li>"
+                "<li><b>Cor do texto</b>: altera a cor das letras; a opção <b>Automática</b> restaura a cor "
+                "padrão;</li>"
+                "<li><b>Marca-texto</b>: aplica uma cor de fundo ao trecho, como um marcador;</li>"
+                "<li><b>Limpar formatação</b>: remove cor, marca-texto, negrito e itálico do trecho.</li>"
+                "</ul>"
+                "Sem seleção, a formatação é aplicada à palavra em que o cursor está. Textos colados de outros "
+                "programas entram sem formatação.",
             ),
         ],
     ),
@@ -221,6 +243,10 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
                 "<tr><td><b>Esc</b></td><td>Fechar a lista ou encerrar o preenchimento</td></tr>"
                 "<tr><td><b>Ctrl + Espaço</b></td><td>Exibir a lista de sugestões</td></tr>"
                 "<tr><td><b>Ctrl + Z</b></td><td>Desfazer no editor</td></tr>"
+                "<tr><td><b>Ctrl + roda do mouse</b></td><td>Aumentar ou diminuir o texto (Auditoria e Anotações)</td></tr>"
+                "<tr><td><b>Ctrl + +</b> / <b>Ctrl + −</b> / <b>Ctrl + 0</b></td><td>Aumentar, diminuir ou "
+                "restaurar o tamanho do texto</td></tr>"
+                "<tr><td><b>Ctrl + N</b> / <b>Ctrl + I</b></td><td>Negrito / itálico (Anotações)</td></tr>"
                 "<tr><td><b>Ctrl + V</b></td><td>Colar captura de tela (Calculadora 40%)</td></tr>"
                 "<tr><td><b>Delete</b></td><td>Remover a imagem selecionada (Calculadora 40%)</td></tr>"
                 "<tr><td><b>Botão esquerdo</b></td><td>Marcar, mover e redimensionar</td></tr>"

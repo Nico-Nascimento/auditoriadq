@@ -24,6 +24,7 @@ from PySide6.QtWidgets import (
 
 from .snippets import Snippet, is_word_char, parse_body
 from .store import SnippetStore
+from .zoom import FontZoom, ZoomControls
 
 TEMPLATE = (
     "Roi: \n"
@@ -425,7 +426,13 @@ class AuditEditor(QPlainTextEdit):
 # A aba completa
 # ---------------------------------------------------------------------------
 class AuditTab(QWidget):
-    def __init__(self, store: SnippetStore, save_path: Path | None = None, parent: QWidget | None = None):
+    def __init__(
+        self,
+        store: SnippetStore,
+        save_path: Path | None = None,
+        settings=None,
+        parent: QWidget | None = None,
+    ):
         super().__init__(parent)
         self.save_path = save_path
         root = QVBoxLayout(self)
@@ -459,6 +466,10 @@ class AuditTab(QWidget):
         self.editor.setObjectName("bareEditor")
         cv.addWidget(self.editor)
         root.addWidget(card, 1)
+
+        self.zoom = FontZoom(self.editor, settings, "fonte/auditoria")
+        bar.addSpacing(10)
+        bar.addWidget(ZoomControls(self.zoom))
 
         self._status_timer = QTimer(self)
         self._status_timer.setSingleShot(True)

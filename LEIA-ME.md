@@ -31,7 +31,7 @@ Dê dois cliques em **`gerar_exe.bat`**. O programa fica na pasta `dist\Auditori
 
 ## Onde ficam os snippets de cada pessoa
 
-`%APPDATA%\AuditoriaDQ\` (snippets.json, anotacoes.txt, auditoria.txt e config.ini)
+`%APPDATA%\AuditoriaDQ\` (snippets.json, anotacoes.html, auditoria.txt e config.ini)
 
 Na primeira execução, esse arquivo é criado com os snippets padrão (`app\snippets_padrao.json`). Depois disso, cada pessoa edita o próprio arquivo pela aba Snippets.
 

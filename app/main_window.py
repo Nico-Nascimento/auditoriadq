@@ -5,7 +5,7 @@ import time
 import traceback
 
 from PySide6.QtCore import QCoreApplication, QSettings, Qt
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QFont, QIcon
 from PySide6.QtWidgets import (
     QApplication,
     QButtonGroup,
@@ -71,9 +71,9 @@ class MainWindow(QMainWindow):
 
         # ---------------- páginas ----------------
         self.tabs = QStackedWidget()  # mantém o nome "tabs" (usado pelo teste)
-        self.audit = AuditTab(store, data_dir / "auditoria.txt")
+        self.audit = AuditTab(store, data_dir / "auditoria.txt", self.settings)
         self.calc = CalculatorTab()
-        self.notes = NotesTab(data_dir / "anotacoes.txt")
+        self.notes = NotesTab(data_dir / "anotacoes.html", self.settings)
         self.snippets = SnippetsTab(store)
         self.help = HelpTab()
         pages = [
@@ -184,6 +184,9 @@ def apply_style(app: QApplication, name: str = "claro") -> None:
     theme.set_current(name)
     t = theme.current()
     app.setStyle("Fusion")
+    font = QFont("Segoe UI")
+    font.setPointSize(10)
+    app.setFont(font)
     app.setPalette(theme.build_palette(t))
     app.setStyleSheet(theme.build_stylesheet(t))
 

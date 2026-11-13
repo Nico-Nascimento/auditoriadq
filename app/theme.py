@@ -87,11 +87,8 @@ def set_current(name: str) -> None:
 
 def build_stylesheet(t: dict[str, str]) -> str:
     return f"""
-QWidget {{
-    font-family: "Segoe UI", Arial, sans-serif;
-    font-size: 10pt;
-    color: {t['text']};
-}}
+/* A fonte padrão vem de app.setFont() (e não daqui), para o zoom dos editores funcionar */
+QWidget {{ color: {t['text']}; }}
 QMainWindow, QWidget#root, QWidget#page {{ background: {t['window']}; }}
 QScrollArea, QScrollArea > QWidget > QWidget#faqContent {{ background: {t['window']}; border: none; }}
 
@@ -172,7 +169,7 @@ QFrame#card QLabel {{ background: transparent; }}
 QFrame#card QLabel#warning {{ background: {t['warning_bg']}; }}
 QFrame#card QLabel#preview {{ background: {t['surface_alt']}; }}
 
-QPlainTextEdit, QLineEdit, QListWidget, QTextBrowser {{
+QPlainTextEdit, QTextEdit, QLineEdit, QListWidget, QTextBrowser {{
     background: {t['input']};
     color: {t['text']};
     border: 1px solid {t['border']};
@@ -182,9 +179,31 @@ QPlainTextEdit, QLineEdit, QListWidget, QTextBrowser {{
     selection-color: {AZUL_ESCURO};
 }}
 QPlainTextEdit:focus, QLineEdit:focus {{ border: 1px solid {AZUL}; }}
-QFrame#card QPlainTextEdit#bareEditor {{ border: none; padding: 10px; background: {t['surface']}; }}
+QFrame#card QPlainTextEdit#bareEditor, QFrame#card QTextEdit#bareEditor {{
+    border: none; padding: 10px; background: {t['surface']};
+}}
 QListWidget::item {{ padding: 5px 4px; border-radius: 6px; }}
 QListWidget::item:selected {{ background: {AMARELO}; color: {AZUL_ESCURO}; }}
+
+QToolButton#fmtMenu {{
+    background: {t['chip']};
+    color: {t['chip_text']};
+    border: none;
+    border-radius: 8px;
+    padding: 5px 10px;
+}}
+QToolButton#fmtMenu:hover {{ background: {t['chip_hover']}; }}
+QToolButton#fmtMenu::menu-indicator {{ image: none; width: 0; }}
+QMenu {{
+    background: {t['surface']};
+    color: {t['text']};
+    border: 1px solid {t['border']};
+    border-radius: 8px;
+    padding: 4px;
+}}
+QMenu::item {{ padding: 6px 18px 6px 10px; border-radius: 6px; }}
+QMenu::item:selected {{ background: {t['chip_hover']}; }}
+QMenu::separator {{ height: 1px; background: {t['border']}; margin: 4px 6px; }}
 
 QListWidget#suggestions {{
     background: #1f2430;
