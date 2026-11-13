@@ -77,7 +77,11 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
                 "<li>Após o último campo, <b>Tab</b> posiciona o cursor ao final da frase.</li>"
                 "<li><b>Esc</b>: encerra o preenchimento a qualquer momento.</li>"
                 "</ul>"
-                "Durante o preenchimento, o campo atual é destacado em amarelo e os demais, em azul.",
+                "Durante o preenchimento, o campo atual é destacado em amarelo e os demais, em azul. "
+                "Quando o campo possui uma lista de opções (por exemplo, direita/esquerda), a lista é exibida "
+                "automaticamente: utilize <b>↑ / ↓</b> para escolher e <b>Tab</b> ou <b>Enter</b> para "
+                "confirmar e seguir para o próximo campo. Para informar outro valor, basta digitar. "
+                "<b>Ctrl + Espaço</b> reabre a lista.",
             ),
             (
                 "Como registrar que uma seção está correta?",
@@ -208,8 +212,13 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
                 "Utilize <code>${1:texto}</code>, <code>${2:texto}</code> e assim por diante. O número define a "
                 "ordem de navegação com Tab, e o texto corresponde ao valor sugerido. Exemplo:"
                 "<pre>Desmarcar o produto de número ${1:id}, ${2:ele não aparece até 40%}.</pre>"
+                "Para oferecer uma lista de opções no campo, separe as opções por vírgula entre barras "
+                "verticais: <code>${3|direita,esquerda|}</code>. A primeira opção é a sugerida, e as demais "
+                "aparecem em uma lista durante o preenchimento. Exemplo:"
+                "<pre>Ampliar a marcação ${1|superior,inferior,lateral direita,lateral esquerda|} do Roi.</pre>"
+                "Para usar uma vírgula dentro de uma opção, escreva <code>\\,</code> (no arquivo JSON, <code>\\\\,</code>). "
                 "Utilize <code>$0</code> para indicar a posição final do cursor. A <b>Prévia</b> exibe a frase "
-                "com os campos destacados.",
+                "com os campos destacados; nos campos com lista, todas as opções são exibidas."
             ),
             (
                 "É possível utilizar o arquivo de snippets do VS Code?",

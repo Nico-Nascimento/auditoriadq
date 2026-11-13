@@ -20,6 +20,7 @@ from PySide6.QtWidgets import QApplication  # noqa: E402
 from app import theme  # noqa: E402
 from app.editor import TEMPLATE, AuditTab  # noqa: E402
 from app.notes_tab import NotesTab  # noqa: E402
+from app.snippets import Snippet  # noqa: E402
 from app.single_instance import SingleInstance  # noqa: E402
 from app.main_window import MainWindow, apply_style  # noqa: E402
 from app.store import SnippetStore  # noqa: E402
@@ -92,6 +93,26 @@ def main() -> None:
     check(ed.textCursor().selectedText() == "identificação", "dentro de um campo, Tab vai para o próximo campo")
     QTest.keyClick(ed, Qt.Key.Key_Escape)
     check(ed.session is None, "Esc encerra o preenchimento")
+
+    print("Campos com lista de opções")
+    QTest.keyClick(ed, Qt.Key.Key_End)
+    QTest.keyClick(ed, Qt.Key.Key_Return)
+    escolha = Snippet("Teste opções", ["tst"], "Marcar à ${1|direita,esquerda|} do produto ${2:id}, marcação ${3|superior,inferior|}.")
+    ed.insert_snippet(escolha)
+    check(ed.choice_popup.isVisible() and ed.choice_popup.count() == 2, "lista de opções aparece no campo")
+    check(ed.textCursor().selectedText() == "direita", "primeira opção vem preenchida")
+    shot(win, "opcoes")
+    QTest.keyClick(ed, Qt.Key.Key_Down)
+    QTest.keyClick(ed, Qt.Key.Key_Tab)
+    check("Marcar à esquerda do produto" in ed.toPlainText(), "seta + Tab escolhe a outra opção")
+    check(ed.textCursor().selectedText() == "id" and not ed.choice_popup.isVisible(), "Tab segue para o campo seguinte")
+    QTest.keyClicks(ed, "7")
+    QTest.keyClick(ed, Qt.Key.Key_Tab)
+    check(ed.choice_popup.isVisible(), "lista aparece de novo no próximo campo com opções")
+    QTest.keyClicks(ed, "lateral")
+    check(not ed.choice_popup.isVisible(), "digitar outro valor fecha a lista")
+    QTest.keyClick(ed, Qt.Key.Key_Tab)
+    check(ed.toPlainText().rstrip().endswith("Marcar à esquerda do produto 7, marcação lateral."), "valor digitado é mantido")
 
     win.audit.save_now()
     saved = (tmp.parent / "auditoria.txt").read_text(encoding="utf-8")

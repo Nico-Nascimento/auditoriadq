@@ -206,6 +206,18 @@ QMenu::item {{ padding: 6px 18px 6px 10px; border-radius: 6px; }}
 QMenu::item:selected {{ background: {t['chip_hover']}; }}
 QMenu::separator {{ height: 1px; background: {t['border']}; margin: 4px 6px; }}
 
+QListWidget#choices {{
+    background: #1f2430;
+    color: #D4D4D4;
+    border: 1px solid #3b4252;
+    border-radius: 6px;
+    padding: 2px;
+    font-size: 10.5pt;
+}}
+QListWidget#choices::item {{ padding: 4px 10px; border-radius: 4px; color: #D4D4D4; }}
+QListWidget#choices::item:selected {{ background: #04395E; color: white; border: 1px solid #0E639C; }}
+QListWidget#choices::item:hover {{ background: #2a3140; }}
+
 QListWidget#suggestions {{
     background: #1f2430;
     border: 1px solid #3b4252;

@@ -51,6 +51,8 @@ def preview_html(body: str) -> str:
             continue
         parts.append(html.escape(text[pos:f.start]))
         inner = html.escape(text[f.start:f.end]) or "&nbsp;&nbsp;&nbsp;"
+        if f.choices:  # campo com lista de opções: mostra todas, separadas por "/"
+            inner = " / ".join(html.escape(c) for c in f.choices) + " ▾"
         parts.append(
             f"<span style='background-color:{t['field_highlight']}; color:{t['field_highlight_text']};'>{inner}</span>"
             f"<sup style='color:{t['text_soft']}'>{f.index}</sup>"
@@ -144,7 +146,8 @@ class SnippetsTab(QWidget):
         syntax = QLabel(
             "Campos de preenchimento: <b>${1:texto}</b>, <b>${2:texto}</b>… "
             "O número define a ordem de navegação com Tab, e o texto corresponde ao valor sugerido. "
-            "Utilize <b>$0</b> para indicar a posição final do cursor."
+            "Para oferecer uma lista de opções, utilize <b>${3|direita,esquerda|}</b> (a primeira opção é "
+            "a sugerida). Utilize <b>$0</b> para indicar a posição final do cursor."
         )
         syntax.setObjectName("hint")
         syntax.setWordWrap(True)

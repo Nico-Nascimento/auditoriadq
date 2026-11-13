@@ -146,6 +146,37 @@ class SnippetSession:
     start: QTextCursor
     end: QTextCursor  # fim do snippet ($0, se existir)
     index: int = -1
+    choices: list[list[str] | None] | None = None  # opções de cada campo (None = campo livre)
+
+
+class ChoicePopup(QListWidget):
+    """Lista de opções de um campo ${1|a,b,c|}."""
+
+    def __init__(self, parent: QWidget):
+        super().__init__(parent)
+        self.setObjectName("choices")
+        self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setUniformItemSizes(True)
+        self.hide()
+
+    def set_choices(self, choices: list[str], current: str) -> None:
+        self.clear()
+        self.addItems(choices)
+        row = choices.index(current) if current in choices else 0
+        self.setCurrentRow(row)
+        fm = self.fontMetrics()
+        width = max(fm.horizontalAdvance(c) for c in choices) + 60
+        rows = min(len(choices), MAX_ROWS)
+        self.resize(max(160, width), rows * ROW_HEIGHT + 8)
+
+    def move_selection(self, delta: int) -> None:
+        if self.count():
+            self.setCurrentRow((self.currentRow() + delta) % self.count())
+
+    def current_text(self) -> str | None:
+        item = self.currentItem()
+        return item.text() if item else None
 
 
 class AuditEditor(QPlainTextEdit):
@@ -162,6 +193,8 @@ class AuditEditor(QPlainTextEdit):
 
         self.popup = SuggestionPopup(self)
         self.popup.itemClicked.connect(lambda _item: self.accept_suggestion())
+        self.choice_popup = ChoicePopup(self)
+        self.choice_popup.itemClicked.connect(lambda _item: self.accept_choice(advance=True))
 
         self.cursorPositionChanged.connect(self._on_cursor_moved)
         self.textChanged.connect(self._refresh_highlight)
@@ -228,16 +261,19 @@ class AuditEditor(QPlainTextEdit):
         self.popup.raise_()
 
     def _place_popup(self) -> None:
-        rect = self.cursorRect()
+        self._place(self.popup)
+
+    def _place(self, popup: QWidget, anchor: QTextCursor | None = None, dx: int = -30) -> None:
+        rect = self.cursorRect(anchor) if anchor is not None else self.cursorRect()
         top_left = self.viewport().mapTo(self, rect.bottomLeft())
-        x = top_left.x() - 30
+        x = top_left.x() + dx
         y = top_left.y() + 4
-        h = self.popup.height()
+        h = popup.height()
         if y + h > self.height() - 4:  # sem espaço embaixo: abre acima da linha
             y = self.viewport().mapTo(self, rect.topLeft()).y() - h - 4
-        x = max(4, min(x, self.width() - self.popup.width() - 4))
+        x = max(4, min(x, self.width() - popup.width() - 4))
         y = max(4, y)
-        self.popup.move(x, y)
+        popup.move(x, y)
 
     def accept_suggestion(self) -> None:
         match = self.popup.current_match()
@@ -290,6 +326,7 @@ class AuditEditor(QPlainTextEdit):
             fields=fields,
             start=self._cursor_at(base, True),
             end=self._cursor_at(end_pos, False),
+            choices=[f.choices for f in parsed.tabstops],
         )
         self.goto_field(+1)
 
@@ -316,8 +353,53 @@ class AuditEditor(QPlainTextEdit):
         self.setTextCursor(c)
         self._moving = False
         self._refresh_highlight()
+        self._show_choices()
+
+    def _show_choices(self) -> None:
+        """Abre a lista de opções se o campo atual for do tipo ${1|a,b|}."""
+        self.choice_popup.hide()
+        s = self.session
+        if s is None or not s.choices or s.index < 0 or s.index >= len(s.choices):
+            return
+        options = s.choices[s.index]
+        if not options:
+            return
+        start_c, end_c = s.fields[s.index]
+        cur = QTextCursor(self.document())
+        cur.setPosition(start_c.position())
+        cur.setPosition(end_c.position(), QTextCursor.MoveMode.KeepAnchor)
+        self.choice_popup.set_choices(options, cur.selectedText())
+        anchor = QTextCursor(self.document())
+        anchor.setPosition(start_c.position())
+        self._place(self.choice_popup, anchor, dx=-6)
+        self.choice_popup.show()
+        self.choice_popup.raise_()
+
+    def accept_choice(self, advance: bool) -> None:
+        """Coloca a opção escolhida no campo atual (e, se pedido, vai para o próximo campo)."""
+        text = self.choice_popup.current_text()
+        self.choice_popup.hide()
+        s = self.session
+        if s is None or text is None:
+            return
+        start_c, end_c = s.fields[s.index]
+        c = QTextCursor(self.document())
+        c.setPosition(start_c.position())
+        c.setPosition(end_c.position(), QTextCursor.MoveMode.KeepAnchor)
+        self._moving = True
+        c.insertText(text)
+        self._moving = False
+        if advance:
+            self.goto_field(+1)
+        else:
+            sel = self.textCursor()
+            sel.setPosition(start_c.position())
+            sel.setPosition(end_c.position(), QTextCursor.MoveMode.KeepAnchor)
+            self.setTextCursor(sel)
+            self._refresh_highlight()
 
     def end_session(self) -> None:
+        self.choice_popup.hide()
         if self.session is not None:
             self.session = None
             self._refresh_highlight()
@@ -362,8 +444,31 @@ class AuditEditor(QPlainTextEdit):
         plain_tab = key == Qt.Key.Key_Tab and not shift and not (mods & Qt.KeyboardModifier.ControlModifier)
 
         if key == Qt.Key.Key_Space and (mods & Qt.KeyboardModifier.ControlModifier):
-            self._update_popup(open_if_hidden=True)  # Ctrl+Espaço abre as sugestões, como no VS Code
+            s = self.session
+            if s is not None and s.choices and 0 <= s.index < len(s.choices) and s.choices[s.index]:
+                self._show_choices()  # num campo com opções, Ctrl+Espaço reabre a lista
+            else:
+                self._update_popup(open_if_hidden=True)  # Ctrl+Espaço abre as sugestões, como no VS Code
             return
+
+        if self.choice_popup.isVisible():
+            if key == Qt.Key.Key_Down:
+                self.choice_popup.move_selection(+1)
+                return
+            if key == Qt.Key.Key_Up:
+                self.choice_popup.move_selection(-1)
+                return
+            if key in (Qt.Key.Key_Return, Qt.Key.Key_Enter) or plain_tab:
+                self.accept_choice(advance=True)
+                return
+            if key == Qt.Key.Key_Backtab or (key == Qt.Key.Key_Tab and shift):
+                self.choice_popup.hide()
+                self.goto_field(-1)
+                return
+            if key == Qt.Key.Key_Escape:
+                self.choice_popup.hide()  # fecha a lista; o texto do campo continua como está
+                return
+            self.choice_popup.hide()  # digitou outra coisa: vale o texto digitado
 
         if self.popup.isVisible():
             if key == Qt.Key.Key_Down:
@@ -404,10 +509,12 @@ class AuditEditor(QPlainTextEdit):
 
     def mousePressEvent(self, e) -> None:
         self.popup.hide()
+        self.choice_popup.hide()
         super().mousePressEvent(e)
 
     def focusOutEvent(self, e) -> None:
         self.popup.hide()
+        self.choice_popup.hide()
         super().focusOutEvent(e)
 
     def resizeEvent(self, e) -> None:

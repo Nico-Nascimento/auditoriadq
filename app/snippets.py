@@ -31,6 +31,7 @@ class Field:
     index: int
     start: int  # posição no texto expandido (caracteres Python)
     end: int
+    choices: list[str] | None = None  # ${1|a,b,c|}: opções para escolher na lista
 
 
 @dataclass
@@ -101,7 +102,7 @@ class _Parser:
                             choices = [x.replace("\\,", ",") for x in re.split(r"(?<!\\),", raw)]
                             start = self.length
                             self.emit(choices[0] if choices else "")
-                            self.fields.append(Field(idx, start, self.length))
+                            self.fields.append(Field(idx, start, self.length, choices or None))
                             self.i = end + 2
                             continue
             self.emit(c)
