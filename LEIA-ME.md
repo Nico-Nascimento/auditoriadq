@@ -7,6 +7,20 @@ Programa com quatro abas:
 - **Snippets**: cadastro de prefixos e frases. Importa e exporta no formato do VS Code.
 - **Ajuda**: perguntas frequentes sobre como usar o programa.
 
+## Baixar o programa
+
+A versão mais recente do **AuditoriaDQ.exe** fica em **Releases**, na página do repositório. Não precisa ter Python instalado: é só baixar e abrir.
+
+## Como sai uma versão nova
+
+A cada envio para a branch `main`, o GitHub Actions (num Windows) faz quatro coisas:
+1. roda o teste automático;
+2. gera o `.exe`;
+3. confere se o `.exe` abre;
+4. se o número em `VERSION` (arquivo `app/main_window.py`) for novo, publica em Releases.
+
+Para lançar uma versão, aumente esse número (ex.: `1.0.1`).
+
 ## Testar rapidamente (precisa de Python 3.10 ou mais novo)
 
 Dê dois cliques em **`executar.bat`**. Na primeira vez, ele instala o PySide6 e depois abre o programa.
