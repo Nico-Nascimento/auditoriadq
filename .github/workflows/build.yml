@@ -27,10 +27,9 @@ jobs:
 
       - name: Teste automático
         env:
-          QT_QPA_PLATFORM: offscreen
           PYTHONIOENCODING: utf-8
           SCREENSHOT_DIR: ${{ runner.temp }}
-        run: python testes/teste_rapido.py
+        run: python testes/teste_rapido.py --janela
 
       - name: Capturas de tela do teste
         if: always()

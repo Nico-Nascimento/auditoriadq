@@ -89,15 +89,19 @@ def _install_error_handler() -> None:
     sys.excepthook = handler
 
 
+def apply_style(app: QApplication) -> None:
+    app.setStyle("Fusion")
+    app.setPalette(light_palette())
+    app.setStyleSheet(STYLESHEET)
+
+
 def run() -> int:
     QCoreApplication.setOrganizationName("")
     QCoreApplication.setApplicationName(APP_NAME)
     QCoreApplication.setApplicationVersion(VERSION)
     _install_error_handler()
     app = QApplication(sys.argv)
-    app.setStyle("Fusion")
-    app.setPalette(light_palette())
-    app.setStyleSheet(STYLESHEET)
+    apply_style(app)
 
     store = SnippetStore()
     win = MainWindow(store)

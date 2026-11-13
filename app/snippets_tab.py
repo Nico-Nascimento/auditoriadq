@@ -33,7 +33,7 @@ from .snippets import (
     snippets_to_text,
 )
 from .store import SnippetStore
-from .theme import AMARELO, AZUL
+from .theme import AZUL
 
 
 def preview_html(body: str) -> str:
@@ -51,7 +51,7 @@ def preview_html(body: str) -> str:
         parts.append(html.escape(text[pos:f.start]))
         inner = html.escape(text[f.start:f.end]) or "&nbsp;&nbsp;&nbsp;"
         parts.append(
-            f"<span style='background:{AMARELO}55; border-bottom:2px solid {AMARELO};'>{inner}</span>"
+            f"<span style='background-color:#FFEBA8;'>{inner}</span>"
             f"<sup style='color:{AZUL}'>{f.index}</sup>"
         )
         pos = f.end
