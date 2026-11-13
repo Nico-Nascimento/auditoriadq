@@ -150,7 +150,7 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
                 "comparação;</li>"
                 "<li><b>sobre o fundo</b>: toda a área de visualização é movida.</li>"
                 "</ul>"
-                "A <b>roda do mouse</b> aplica zoom no ponto em que o cursor está posicionado (de 20% a 1000%). "
+                "A <b>roda do mouse</b> aplica zoom no ponto em que o cursor está posicionado (de 5% a 1000%). "
                 "O botão <b>Ajustar à tela</b> ajusta o zoom para exibir todas as imagens de uma só vez.",
             ),
             (

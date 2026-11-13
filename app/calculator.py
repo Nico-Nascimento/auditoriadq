@@ -43,7 +43,7 @@ from .theme import AMARELO, AZUL, AZUL_ESCURO
 
 HANDLE_PX = 10  # tamanho das alças na tela (não muda com o zoom)
 GAP = 40  # espaço entre imagens novas
-MIN_SCALE, MAX_SCALE, ZOOM_STEP = 0.2, 10.0, 1.05
+MIN_SCALE, MAX_SCALE, ZOOM_STEP = 0.05, 10.0, 1.05
 IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".bmp", ".gif", ".webp", ".tif", ".tiff"}
 
 COLOR_HEIGHT_BAND = QColor(68, 110, 155, round(0.25 * 255))
