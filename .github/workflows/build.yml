@@ -40,6 +40,16 @@ jobs:
           path: ${{ runner.temp }}/tela-*.png
           if-no-files-found: ignore
 
+      - name: Telas no log (base64)
+        if: always()
+        shell: pwsh
+        run: |
+          Get-ChildItem "$env:RUNNER_TEMP\tela-*.png" | ForEach-Object {
+            Write-Host "BEGIN-PNG $($_.Name)"
+            Write-Host ([Convert]::ToBase64String([IO.File]::ReadAllBytes($_.FullName)))
+            Write-Host "END-PNG"
+          }
+
       - name: Gerar o .exe
         run: >
           python -m PyInstaller --noconfirm --clean --onefile --windowed
