@@ -91,7 +91,8 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
             (
                 "Por que mais de um snippet aparece na lista?",
                 "A lista exibe todos os snippets cujo prefixo começa com o texto digitado. Por exemplo, "
-                "<b>dp</b> exibe <b>dp</b> (Desmarcar produto) e <b>dps</b> (Desmarcar produtos); o prefixo "
+                "<b>dp</b> exibe <b>dp</b> (Desmarcar produto), <b>dps</b> (Desmarcar produtos) e <b>dpl</b> "
+                "(Diminuir prateleira); o prefixo "
                 "idêntico ao digitado aparece primeiro. Prefixos repetidos também são permitidos; nesse caso, a "
                 "escolha é feita pelo nome.",
             ),
