@@ -99,7 +99,7 @@ class _Parser:
                         end = s.find("|}", j + 1)
                         if end != -1:
                             raw = s[j + 1:end]
-                            choices = [x.replace("\\,", ",") for x in re.split(r"(?<!\\),", raw)]
+                            choices = [x.replace("\\,", ",").strip() for x in re.split(r"(?<!\\),", raw)]
                             start = self.length
                             self.emit(choices[0] if choices else "")
                             self.fields.append(Field(idx, start, self.length, choices or None))

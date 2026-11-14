@@ -1,0 +1,175 @@
+{
+  "Desmarcar produto 40%": {
+    "prefix": "dp1",
+    "body": [
+      "Desmarcar o produto de número ${1:id}, ${2:ele não aparece até 40%}."
+    ]
+  },
+
+  "Desmarcar produto escopo": {
+    "prefix": "dp2",
+    "body": [
+      "Desmarcar o produto de número ${1:id}, ${2:ele não entra no escopo}."
+    ]
+  },
+
+  "Desmarcar produtos 40%": {
+    "prefix": "dps1",
+    "body": [
+      "Desmarcar os produtos de números ${1:id}, ${2:eles não aparecem até 40%}."
+    ]
+  },
+
+  "Desmarcar produtos escopo": {
+    "prefix": "dps2",
+    "body": [
+      "Desmarcar os produtos de números ${1:id}, ${2:eles não entram no escopo}."
+    ]
+  },
+
+  "Marcar produto 40%": {
+    "prefix": "mp1",
+    "body": [
+      "Marcar ${1:1} produto \"${2:identificação}\" à ${3:direita} do produto de número ${4:id}, ${5:ele aparece até 40%}."
+    ]
+  },
+
+  "Marcar produtos 40%": {
+    "prefix": "mps1",
+    "body": [
+      "Marcar ${1:2} produtos \"${2:identificação}\" à ${3:direita} do produto de número ${4:id}, ${5:eles aparecem até 40%}."
+    ]
+  },
+
+  "Marcar produto escopo": {
+    "prefix": "mp1",
+    "body": [
+      "Marcar ${1:1} produto \"${2:identificação}\" à ${3:direita} do produto de número ${4:id}, ${5:ele também entra no escopo}."
+    ]
+  },
+
+  "Marcar produtos escopo": {
+    "prefix": "mps1",
+    "body": [
+      "Marcar ${1:2} produtos \"${2:identificação}\" à ${3:direita} do produto de número ${4:id}, ${5:eles também entram no escopo}."
+    ]
+  },
+
+  "Ajustar identificação produto": {
+    "prefix": "aip",
+    "body": [
+      "Ajustar a identificação do produto de número ${1:id}, identificar como \"${2:identificação}\"."
+    ]
+  },
+
+  "Ajustar identificações produtos": {
+    "prefix": "aips",
+    "body": [
+      "Ajustar as identificações dos produtos de números ${1:id}, identificar como \"${2:identificação}\"."
+    ]
+  },
+
+  "Desmarcar preço valor": {
+    "prefix": "dç",
+    "body": [
+      "Desmarcar o preço de número ${1:id}, ${2:o valor monetário não aparece por completo}."
+    ]
+  },
+
+  "Desmarcar preços valor": {
+    "prefix": "dçs",
+    "body": [
+      "Desmarcar os preços de números ${1:id}, ${2:os valores monetários não aparecem por completo}."
+    ]
+  },
+
+  "Desmarcar preço não é": {
+    "prefix": "dç2",
+    "body": [
+      "Desmarcar o preço de número ${1:id}, ${2:pois na verdade não é um preço}."
+    ]
+  },
+
+  "Desmarcar preços não é": {
+    "prefix": "dçs2",
+    "body": [
+      "Desmarcar os preços de números ${1:id}, ${2:pois na verdade não são preços}."
+    ]
+  },
+
+  "Marcar preço": {
+    "prefix": "mç",
+    "body": [
+      "Marcar ${1:1} preço \"${2:ETIQUETA PADRÃO}\" à ${3:direita} do preço de número ${4:id}, ${5:pois o valor monetário aparece por completo}."
+    ]
+  },
+
+  "Marcar preços": {
+    "prefix": "mçs",
+    "body": [
+      "Marcar ${1:2} preços \"${2:ETIQUETA PADRÃO}\" à ${3:direita} do preço de número ${4:id}, ${5:pois os valores monetários aparecem por completo}."
+    ]
+  },
+
+  "Ajustar identificação preço": {
+    "prefix": "aiç",
+    "body": [
+      "Ajustar a identificação do preço de número ${1:id}, identificar como \"${2:CARTAZ}\"."
+    ]
+  },
+
+  "Ajustar identificações preços": {
+    "prefix": "aiçs",
+    "body": [
+      "Ajustar as identificações dos preços de números ${1:id}, identificar como \"${2:CARTAZ}\"."
+    ]
+  },
+
+  "exposto luz": {
+    "prefix": "luz",
+    "body": [
+      "marcamos os preços expostos pela luz desde que seja possível identificar que é um precificador"
+    ]
+  },
+
+  "Diminuir Roi": {
+    "prefix": "droi",
+    "body": [
+      "Diminuir a marcação ${1:superior} do Roi, está ultrapassando o limite da foto."
+    ]
+  },
+
+  "Ampliar Roi": {
+    "prefix": "aroi",
+    "body": [
+      "Ampliar a marcação ${1:superior} do Roi, para cobrir ${2:a prateleira}."
+    ]
+  },
+
+  "Ampliar prateleira": {
+    "prefix": "apl",
+    "body": [
+      "Ampliar a marcação ${1:superior} da prateleira de número ${2:id}, ${3:pois deve sobrepor na marcação da prateleira de cima}."
+    ]
+  },
+
+  "Diminuir prateleira": {
+    "prefix": "dpl",
+    "body": [
+      "Diminuir a marcação ${1:superior} da prateleira de número ${2:id}, ${3:pois deve ficar alinhada ao tamanho real da própria prateleira}."
+    ]
+  },
+
+  "Clip Strip": {
+    "prefix": "clip",
+    "body": [
+      "Marcar 1 Clip-Strip na ${1:direita} da foto."
+    ]
+  },
+  "Correto": {
+    "prefix": "cr",
+    "body": [
+      "Correto."
+    ]
+  }
+}

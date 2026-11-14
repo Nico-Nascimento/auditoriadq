@@ -134,7 +134,7 @@ class SnippetsTab(QWidget):
         self.ed_name = QLineEdit()
         self.ed_name.setPlaceholderText("Exemplo: Desmarcar produto 40%")
         self.ed_prefix = QLineEdit()
-        self.ed_prefix.setPlaceholderText("Exemplo: dp1   (para mais de um prefixo, separe-os por vírgula)")
+        self.ed_prefix.setPlaceholderText("Exemplo: dp   (para mais de um prefixo, separe-os por vírgula)")
         self.ed_body = QPlainTextEdit()
         self.ed_body.setPlaceholderText("Exemplo: Desmarcar o produto de número ${1:id}, ${2:ele não aparece até 40%}.")
         self.ed_body.setMinimumHeight(110)

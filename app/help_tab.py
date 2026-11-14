@@ -58,7 +58,7 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
             ),
             (
                 "Como utilizar os snippets (frases prontas)?",
-                "Digite o prefixo desejado, por exemplo <b>dp1</b>. Será exibida uma lista com as opções "
+                "Digite o prefixo desejado, por exemplo <b>dp</b>. Será exibida uma lista com as opções "
                 "correspondentes, contendo o prefixo e o nome de cada frase."
                 "<ul>"
                 "<li><b>↑ / ↓</b>: selecionam a opção.</li>"
@@ -89,9 +89,11 @@ FAQ: list[tuple[str, list[tuple[str, str]]]] = [
                 "inserido.",
             ),
             (
-                "Por que dois snippets aparecem com o mesmo prefixo?",
-                "Prefixos repetidos são permitidos, como <b>mp1</b> para “Marcar produto 40%” e "
-                "“Marcar produto escopo”. Ambos são exibidos na lista, e a escolha é feita pelo nome.",
+                "Por que mais de um snippet aparece na lista?",
+                "A lista exibe todos os snippets cujo prefixo começa com o texto digitado. Por exemplo, "
+                "<b>dp</b> exibe <b>dp</b> (Desmarcar produto) e <b>dps</b> (Desmarcar produtos); o prefixo "
+                "idêntico ao digitado aparece primeiro. Prefixos repetidos também são permitidos; nesse caso, a "
+                "escolha é feita pelo nome.",
             ),
             (
                 "Como transferir o texto para o sistema da empresa?",

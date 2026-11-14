@@ -17,6 +17,7 @@ from .resources import resource_path
 # desses padrões (nunca editado), ele é atualizado automaticamente para o padrão novo.
 OLD_DEFAULT_FINGERPRINTS = {
     "820f9365c4560057de24118f2e48be08496b6418c3b4cff502c87c971e60d664",  # v1.0.0 / v1.1.0
+    "c8755799a1fa81911e169904554dee0d844d2fc490508784a59b2f16f892b4dc",  # v1.2.0 a v1.6.0
 }
 
 

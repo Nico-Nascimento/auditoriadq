@@ -555,7 +555,7 @@ class AuditTab(QWidget):
         bar.addWidget(self.btn_reset)
         root.addLayout(bar)
         root.addWidget(hint_label(
-            "Digite um prefixo (por exemplo, <b>dp1</b> ou <b>cr</b>) e pressione <b>Tab</b> · "
+            "Digite um prefixo (por exemplo, <b>dp</b> ou <b>cr</b>) e pressione <b>Tab</b> · "
             "<b>Tab</b> e <b>Shift+Tab</b> navegam entre os campos · <b>Esc</b> encerra o preenchimento"
         ))
         self.status = StatusLine()
